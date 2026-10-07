@@ -1,0 +1,26 @@
+# PRISON
+
+> PRISON is an open-source prompt studio built with Next.js and TypeScript. It turns a natural-language request into an isolated, structured task (a "prison") and compiles a verified prompt optimized for a target AI (ChatGPT/GPT, Claude, Gemini, Codex, or a tool-using agent). An optional council of 3–6 different LLMs drafts, critiques, revises and blindly ranks candidate prompts, and the council's work is shown as a 3D arena (three.js) built from real recorded events.
+
+- Pipeline: request → intent engine → task spec (goal, constraints, missing context, output format) → target-AI contract → multi-model council → semantic check → verified prompt.
+- Users can revise in plain language, answer clarifying questions, lock constraints, switch target AI, restore versions and configure their own API connections and models.
+- Providers: NVIDIA, DeepSeek, Anthropic, OpenAI (server-side keys); a local engine runs with no key.
+- Output languages: Turkish and English. Interface language: Turkish.
+- Stack: Next.js 16, React 19, TypeScript, Zod, three.js, Vitest. Run with `npm install && npm run dev` (port 3100).
+
+## Docs
+
+- [README](https://github.com/muhammetaycn/prison/blob/main/README.md): setup, pipeline, architecture, REST API (Turkish, with an English summary)
+- [Product system](https://github.com/muhammetaycn/prison/blob/main/docs/product-system.md): what the user controls, the learning flow, the personal AI team
+
+## Source
+
+- [src/core](https://github.com/muhammetaycn/prison/tree/main/src/core): intent engine, prison engine, requirement resolver, context isolation, prompt compiler, critic, revision engine, pipelines
+- [src/adapters](https://github.com/muhammetaycn/prison/tree/main/src/adapters): target-AI adapters (gpt, claude, gemini, codex, auto)
+- [src/services/ai](https://github.com/muhammetaycn/prison/tree/main/src/services/ai): model providers and structured output
+- [src/app/api](https://github.com/muhammetaycn/prison/tree/main/src/app/api): REST API
+- [src/ui/council-arena](https://github.com/muhammetaycn/prison/tree/main/src/ui/council-arena): the 3D council arena and team table
+
+## Optional
+
+- [Screenshots](https://github.com/muhammetaycn/prison/tree/main/docs/images)

@@ -25,6 +25,32 @@ KULLANICI İSTEĞİ → INTENT ENGINE → PRISON OLUŞTURUCU → İZOLE PRISON S
 → SON METNİN ANLAMSAL DENETİMİ → GEREKİRSE BİR DÜZELTME → DOĞRULANMIŞ PROMPT
 ```
 
+## In English
+
+**PRISON is an open-source prompt studio.** You describe what you want in plain language; PRISON isolates the
+request in its own structured task (a "prison"), works out the goal, constraints, missing context and output
+format, and compiles a verified, ready-to-use prompt for the AI you will paste it into: ChatGPT/GPT, Claude,
+Gemini, Codex or a tool-using agent, in a phone, browser or chat setting.
+
+- **Request → structured task → prompt.** An intent engine reads the request, a requirement resolver turns it into a
+  task spec, and a prompt compiler builds the prompt block by block for the chosen target AI.
+- **A council of models.** Optionally, 3–6 different LLMs draft candidate prompts independently, critique each
+  other, revise, and are judged blind; the final text passes a semantic check before it is offered.
+- **Watch the work.** The council runs as a 3D scene: a competition arena, where the jury's scores become weapons
+  and the strongest prompt wins, or a team table, where the models converge on one shared text. Every moment on
+  stage comes from a real recorded event.
+- **You stay in control.** Revise the task in plain language, answer clarifying questions, pin constraints that must
+  never change, switch the target AI, restore earlier versions, and choose your own API connections and models.
+- **Providers:** NVIDIA, DeepSeek, Anthropic and OpenAI (keys stay on the server); a local engine works without any
+  key. Prompts can be produced in Turkish or English; the interface is in Turkish.
+- **Stack:** Next.js 16, React 19, TypeScript, Zod, three.js, Vitest.
+
+```bash
+npm install
+cp .env.example .env.local   # optional: add one provider key
+npm run dev                  # http://localhost:3100
+```
+
 ## Çalıştırma
 
 ```bash
