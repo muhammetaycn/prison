@@ -53,6 +53,8 @@ export const DEEP_DEPTH: CouncilDepth = {
 export interface CouncilMetadata {
   enabled: boolean;
   models: Array<{ id: string; provider: string; model: string | null; role: string }>;
+  /** A valid primary can remain available while optional team configuration needs repair. */
+  configurationError?: string;
 }
 
 /**
@@ -152,11 +154,12 @@ function reserveModels(env: Env, members: string[]): string[] {
 }
 
 /** Public status deliberately excludes provider instances, keys and endpoint details. */
-export function describeCouncil(council: CouncilDeps | null | undefined): CouncilMetadata {
+export function describeCouncil(council: CouncilDeps | null | undefined, configurationError?: string | null): CouncilMetadata {
   return {
     enabled: Boolean(council),
     models: council?.members.map(({ id, role, provider }) => ({
       id, role, provider: provider.info.provider, model: provider.info.model,
     })) ?? [],
+    ...(configurationError ? { configurationError } : {}),
   };
 }

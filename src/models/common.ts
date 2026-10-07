@@ -1,13 +1,14 @@
 import { z } from "zod";
 
-/** Language the prison state and the compiled prompt are written in. The UI itself is Turkish. */
-export const LANGUAGES = ["en", "tr"] as const;
+/** Language the prison state and the compiled prompt are written in: English, Turkish or Simplified Chinese. */
+export const LANGUAGES = ["en", "tr", "zh"] as const;
 export const LanguageSchema = z.enum(LANGUAGES);
 export type Language = z.infer<typeof LanguageSchema>;
 
 export const LANGUAGE_NAMES: Record<Language, string> = {
   en: "English",
   tr: "Turkish",
+  zh: "Simplified Chinese",
 };
 
 /** Target selector value. AUTO lets the adapter resolver pick the best prompt style. */

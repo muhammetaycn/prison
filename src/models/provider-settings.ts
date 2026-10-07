@@ -35,4 +35,6 @@ export interface PublicProviderSettings {
   providers: Array<ProviderProfile & { keyPresent: boolean; keySource: "saved" | "environment" | "none" }>;
   primary: ProviderSelection | null;
   council: z.infer<typeof ProviderCouncilSchema>;
+  /** Redacted optional environment-team diagnostic; never part of the editable/saved input contract. */
+  councilConfigurationError?: string;
 }

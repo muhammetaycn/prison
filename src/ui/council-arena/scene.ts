@@ -405,7 +405,8 @@ export class ArenaScene {
     this.distance = mode === "collaboration" ? 9.2 : 14.5;
     if (mode === "collaboration") this.buildRoom(); else { this.buildField(); this.buildBox(); }
     this.startAmbient();
-    this.post = new PostFx(three, this.renderer, this.scene, this.camera, mode);
+    // The stage only exists for a council; anything that is not the team table is staged as the arena.
+    this.post = new PostFx(three, this.renderer, this.scene, this.camera, mode === "collaboration" ? "collaboration" : "competition");
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(host);
@@ -1612,7 +1613,7 @@ export class ArenaScene {
   /** Life round the stage (ambient.ts), placed by the crowns, flower beds and window sills just built. */
   private startAmbient() {
     this.ambient = new Ambient(this.three, this.scene, {
-      mode: this.options.mode,
+      mode: this.options.mode === "collaboration" ? "collaboration" : "competition",
       reducedMotion: this.options.reducedMotion,
       ramp: this.toonRamp(),
       ink: this.inkLine(),

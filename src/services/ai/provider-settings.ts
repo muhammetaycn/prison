@@ -6,6 +6,7 @@ import type { FileProviderSettingsRepository, StoredProviderSettings } from "@/s
 import { createCredentialedProvider, createProvider, providerKey, resolveEngineStatus, type EngineStatus } from "./config";
 import { createCouncil, describeCouncil, DEFAULT_COUNCIL_MODELS, DEEP_DEPTH, QUICK_DEPTH, type CouncilDeps } from "./council-config";
 import { DEFAULT_NVIDIA_BASE_URL, DEFAULT_DEEPSEEK_BASE_URL } from "./deepseek";
+import { AIProviderError } from "./errors";
 import type { LLMProvider } from "./types";
 
 type Env = Record<string, string | undefined>;
@@ -41,9 +42,20 @@ function envBaseURL(type: ProviderType, env: Env): string {
   return PROVIDER_BASE_URLS[type];
 }
 
+/** Optional team configuration must not prevent a valid primary from serving single-model work. */
+function environmentCouncil(engine: EngineStatus, env: Env): { council: CouncilDeps | null; councilConfigurationError: string | null } {
+  try {
+    return { council: createCouncil(engine, env), councilConfigurationError: null };
+  } catch (error) {
+    if (!(error instanceof AIProviderError) || error.kind !== "configuration") throw error;
+    // createCouncil's configuration details are fixed diagnostics; credentials and raw inputs stay private.
+    return { council: null, councilConfigurationError: error.detail };
+  }
+}
+
 export function environmentProviderSettings(env: Env = process.env): PublicProviderSettings {
   const engine = resolveEngineStatus(env);
-  const council = createCouncil(engine, env);
+  const { council, councilConfigurationError } = environmentCouncil(engine, env);
   return {
     revision: "environment", source: "environment",
     providers: TYPES.map(provider => ({ id: `env_${provider}`, label: provider === "nvidia" ? "NVIDIA" : provider === "deepseek" ? "DeepSeek" : provider === "openai" ? "OpenAI" : "Anthropic",
@@ -52,6 +64,7 @@ export function environmentProviderSettings(env: Env = process.env): PublicProvi
     council: { enabled: Boolean(council), depth: env.PRISON_COUNCIL_DEPTH?.trim().toLowerCase() === "quick" ? "quick" : "deep",
       members: council ? describeCouncil(council).models.map(member => ({ providerId: "env_nvidia", model: member.model!, role: member.role }))
         : DEFAULT_COUNCIL_MODELS.map((model, index) => ({ providerId: "env_nvidia", model, role: ROLES[index] })) },
+    ...(councilConfigurationError ? { councilConfigurationError } : {}),
   };
 }
 
@@ -133,10 +146,12 @@ export async function resetProviderSettings(repository: FileProviderSettingsRepo
 }
 
 /** Each runtime owns separate clients. Already accepted work keeps these instances after settings change. */
-export function configuredProviders(saved: StoredProviderSettings | null, env: Env = process.env): { engine: EngineStatus; provider: LLMProvider | null; council: CouncilDeps | null } {
+export function configuredProviders(saved: StoredProviderSettings | null, env: Env = process.env): { engine: EngineStatus; provider: LLMProvider | null; council: CouncilDeps | null; councilConfigurationError: string | null } {
   if (!saved) {
     const engine = resolveEngineStatus(env);
-    return { engine, provider: createProvider(engine, env), council: createCouncil(engine, env) };
+    // Primary configuration remains strict, including missing credentials; only the optional team is isolated.
+    const provider = createProvider(engine, env);
+    return { engine, provider, ...environmentCouncil(engine, env) };
   }
   validateReferences(saved, env);
   const create = (choice: NonNullable<StoredProviderSettings["primary"]>) => {
@@ -154,7 +169,7 @@ export function configuredProviders(saved: StoredProviderSettings | null, env: E
     members: saved.council.members.map((member, index) => ({ id: `member_${index + 1}`, role: member.role ?? ROLES[index], provider: create(member) })),
     // No replacement model is added without an explicit owner selection.
     reserves: [],
-  } : null };
+  } : null, councilConfigurationError: null };
 }
 
 /** Endpoint/model topology isolates recoverable reviews; credential or label edits retain their work. */

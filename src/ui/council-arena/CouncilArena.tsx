@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { COUNCIL_DIMENSIONS, COUNCIL_WEAPONS, type CouncilEvent } from "@/models/council";
+import { COUNCIL_DIMENSIONS, type CouncilDimension, type CouncilEvent } from "@/models/council";
 import { councilEventIndexAtSeq, councilEventSeqAtIndex, isNextCouncilEvent, nextCouncilEventSeq } from "@/models/council-events";
 import type { CouncilMode } from "@/models/options";
 import { cx } from "@/ui/lib/format";
+import { useI18n, type Translate } from "@/ui/i18n";
 import type { Anchor, ArenaScene } from "./scene";
 import { kindLabel, modelLabel, seatsFrom, stateAt, weaponName, type Seat } from "./timeline";
-import { WEATHER_LABELS, weatherAt } from "./weather";
+import { WEATHER_LABELS, weatherAt, type WeatherKind } from "./weather";
 import { titleCardFor, type TitleCard } from "./cards";
 import { ArenaSound } from "./sound";
 import { SpeechQuote } from "./SpeechQuote";
-import { StageControls } from "./StageControls";
-import { getGesture } from "./gesture-library";
 import { PromptJourney } from "@/ui/participation/PromptJourney";
 import { entranceFor, juryScoreText, sceneUpdateKey, viewingDwellMs } from "./viewing";
 import styles from "./CouncilArena.module.css";
@@ -65,6 +64,9 @@ interface MilestoneMarker {
 
 /** Whose turn it is, what they are saying and what the rules decided — as a lamp-lit table or a fighting field. */
 export function CouncilArena({ mode, events, live, promptReady = false }: CouncilArenaProps) {
+  const { locale, t } = useI18n();
+  const eventLabel = (kind: CouncilEvent["kind"]) => kindLabel(kind, mode, locale);
+  const equipmentLabel = (dimension: CouncilDimension) => weaponName(dimension, locale);
   const hostRef = useRef<HTMLDivElement>(null);
   const overlayRefs = useRef(new Map<string, HTMLDivElement>());
   const sceneRef = useRef<ArenaScene | null>(null);
@@ -90,7 +92,6 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
   const [actorFilter, setActorFilter] = useState<string | null>(null);
   const [decisionsOnly, setDecisionsOnly] = useState(false);
   const [readingTempo, setReadingTempo] = useState(false);
-  const [viewerGesture, setViewerGesture] = useState<{ seatId: string; label: string; seq: number } | null>(null);
 
   const fight = mode === "competition";
   const index = councilEventIndexAtSeq(events, cursorSeq);
@@ -99,6 +100,8 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
   const state = useMemo(() => stateAt(events, index), [events, index]);
   // The weather follows what really happens at the table; it never changes a score.
   const weather = useMemo(() => weatherAt(events, index, state), [events, index, state]);
+  const weatherLabel = localizedWeatherLabel(weather.kind, t);
+  const weatherReason = localizedWeatherReason(weather.reason, t);
   const current = index >= 0 ? events[index] : undefined;
   const backlog = events.length - 1 - index;
   const effectiveSpeed = live && following && backlog > 8 ? Math.max(speed, 4) : speed;
@@ -114,7 +117,7 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
         if (curRound !== -1 && i > startIdx) {
           segments.push({
             round: curRound,
-            label: curRound === 0 ? "Hazırlık" : `${curRound}. Tur`,
+            label: curRound === 0 ? t("Hazırlık", "Preparation", "准备") : t(`${curRound}. Tur`, `Round ${curRound}`, `第 ${curRound} 轮`),
             startIndex: startIdx,
             endIndex: i - 1,
             count: i - startIdx,
@@ -127,14 +130,14 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
     if (events.length > startIdx) {
       segments.push({
         round: curRound,
-        label: curRound === 0 ? "Hazırlık" : `${curRound}. Tur`,
+        label: curRound === 0 ? t("Hazırlık", "Preparation", "准备") : t(`${curRound}. Tur`, `Round ${curRound}`, `第 ${curRound} 轮`),
         startIndex: startIdx,
         endIndex: events.length - 1,
         count: events.length - startIdx,
       });
     }
     return segments;
-  }, [events]);
+  }, [events, t]);
 
   const milestones = useMemo(() => {
     const list: MilestoneMarker[] = [];
@@ -143,23 +146,23 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
       let icon = "";
       let title = "";
       if (e.kind === "winner") {
-        icon = fight ? "K" : "U";
-        title = fight ? "Final Kararı" : "Uzlaşma Kararı";
+        icon = fight ? t("K", "W", "胜") : t("U", "C", "合");
+        title = fight ? t("Final Kararı", "Final decision", "最终决定") : t("Uzlaşma Kararı", "Consensus decision", "共识决定");
       } else if (e.kind === "finalist") {
-        icon = "D";
-        title = "Son denetime seçilen aday";
+        icon = t("D", "R", "审");
+        title = t("Son denetime seçilen aday", "Candidate selected for final review", "选入最终审查的候选方案");
       } else if (e.kind === "eliminated") {
-        icon = "E";
-        title = "Eleme";
+        icon = t("E", "E", "淘");
+        title = t("Eleme", "Elimination", "淘汰");
       } else if (e.kind === "weapon") {
-        icon = "S";
-        title = e.dimension ? weaponName(e.dimension) : "Silah";
+        icon = t("S", "G", "装");
+        title = e.dimension ? weaponName(e.dimension, locale) : t("Silah", "Equipment", "装备");
       } else if (e.kind === "draft") {
-        icon = "T";
-        title = "Ortak taslak";
+        icon = t("T", "D", "稿");
+        title = t("Ortak taslak", "Shared draft", "共同草稿");
       } else if (e.kind === "research") {
-        icon = "İ";
-        title = fight ? "Keşif" : "İnceleme";
+        icon = t("İ", "R", "研");
+        title = fight ? t("Keşif", "Exploration", "探索") : t("İnceleme", "Research", "研究");
       }
       if (icon) {
         const s = seats.find((seat) => seat.id === e.actorId);
@@ -176,7 +179,7 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
       }
     }
     return list;
-  }, [events, fight, seats]);
+  }, [events, fight, seats, locale, t]);
 
   // Build the stage once per mode. three.js is loaded only here, on the client.
   useEffect(() => {
@@ -313,9 +316,7 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
   }, [events, index]);
 
   const seatOf = (id: string | null | undefined) => seats.find((seat) => seat.id === id);
-  const caption = captionFor(current, mode, seatOf);
-  const viewerCaption = !playing && viewerGesture?.seq === cursorSeq
-    ? `Senin hareket isteğin · ${seatOf(viewerGesture.seatId)?.label ?? "Karakter"} · ${viewerGesture.label}` : null;
+  const caption = captionFor(current, mode, seatOf, t, equipmentLabel);
   const visibleEvents = useMemo(
     () => events.map((event, position) => ({ event, position })).filter(({ event }) => event.kind !== "thinking"),
     [events],
@@ -343,7 +344,6 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
     floaterTimersRef.current.clear();
     setCard(null);
     setFloaters([]);
-    setViewerGesture(null);
   };
 
   const restart = () => { clearTransient(); setFollowing(false); setCursorSeq(-1); setPlaying(true); };
@@ -357,18 +357,18 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
   const progressPercent = events.length > 1 ? Math.min(100, Math.max(0, (index / (events.length - 1)) * 100)) : 0;
 
   return (
-    <section className={cx(styles.root, fight ? styles.fight : styles.table)} aria-label={fight ? "Kapışma arenası" : "Tartışma masası"}>
+    <section className={cx(styles.root, fight ? styles.fight : styles.table)} aria-label={fight ? t("Kapışma arenası", "Competition arena", "竞技场") : t("Tartışma masası", "Discussion table", "讨论桌")}>
       <div className={styles.head}>
         <div>
-          <span className="label">{live ? "Canlı" : "Tekrar"} · {fight ? "Kapışma arenası" : "Tartışma masası"}</span>
-          <h3>{fight ? "Yeşil saha: silahlar, saldırılar ve eleme" : "Karanlık oda: oylamasız ortak çalışma"}</h3>
+          <span className="label">{live ? t("Canlı", "Live", "实时") : t("Tekrar", "Replay", "回放")} · {fight ? t("Kapışma arenası", "Competition arena", "竞技场") : t("Tartışma masası", "Discussion table", "讨论桌")}</span>
+          <h3>{fight ? t("Yeşil saha: silahlar, saldırılar ve eleme", "The field: equipment, critiques and elimination", "绿地：装备、评审与淘汰") : t("Karanlık oda: oylamasız ortak çalışma", "The room: collaboration through consensus", "讨论室：通过共识共同协作")}</h3>
         </div>
-        <span className={styles.round}>{state.round > 0 ? `${state.round}. tur` : "Hazırlık"}</span>
+        <span className={styles.round}>{state.round > 0 ? t(`${state.round}. tur`, `Round ${state.round}`, `第 ${state.round} 轮`) : t("Hazırlık", "Preparation", "准备")}</span>
       </div>
 
       <div className={styles.stage}>
         <div ref={hostRef} className={styles.canvas} />
-        {!ready && !fallback ? <div className={styles.loading}><span className="spinner" aria-hidden /> Sahne hazırlanıyor…</div> : null}
+        {!ready && !fallback ? <div className={styles.loading}><span className="spinner" aria-hidden /> {t("Sahne hazırlanıyor…", "Preparing the scene…", "正在准备场景…")}</div> : null}
         <div className={cx(styles.overlay, fallback && styles.overlayStatic)}>
           {seats.map((seat) => {
             const speaking = state.speaker === seat.id;
@@ -381,26 +381,26 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
                 style={{ "--seat": seat.color, zIndex: speaking ? 3 : thinking ? 2 : 1 } as CSSProperties}>
                 {bubble ? (
                   <div key={bubble.seq} className={cx(styles.bubble, styles[`enter_${entranceFor(bubble)}`], bubble.kind === "objection" && styles.bubbleBad, bubble.kind === "approval" && styles.bubbleGood)} role="note">
-                    <strong>{kindLabel(bubble.kind, mode)}{bubble.targetId && seatOf(bubble.targetId) ? ` → ${seatOf(bubble.targetId)!.label}` : ""}</strong>
-                    <span>{bubble.kind === "weapon" && bubble.dimension ? weaponName(bubble.dimension) : bubble.text}</span>
+                    <strong>{eventLabel(bubble.kind)}{bubble.targetId && seatOf(bubble.targetId) ? ` → ${seatOf(bubble.targetId)!.label}` : ""}</strong>
+                    <span>{bubble.kind === "weapon" && bubble.dimension ? equipmentLabel(bubble.dimension) : bubble.text}</span>
                   </div>
                 ) : thinking ? (
                   <div className={cx(styles.bubble, styles.thought)}>
                     <span className={styles.dots} aria-hidden><i /><i /><i /></span>
-                    <span>{thinkingText.get(seat.id) ?? "Düşünüyor"}</span>
+                    <span>{thinkingText.get(seat.id) ?? t("Düşünüyor", "Thinking", "思考中")}</span>
                   </div>
                 ) : null}
                 <div className={cx(styles.chip, speaking && styles.speaking, thinking && styles.thinking, eliminated && styles.out, state.winner === seat.id && styles.winner)}>
                   <span className={styles.dot} />
                   <span className={styles.name} title={seat.model}>{seat.label}</span>
-                  {eliminated ? <span className={styles.tag}>{fight ? "jüri" : "ayrıldı"}</span> : null}
-                  {state.winner === seat.id ? <span className={styles.tag}>{fight ? "kazanan" : "yazıcı"}</span> : null}
-                  {state.finalist === seat.id ? <span className={styles.tag}>son denetim adayı</span> : null}
+                  {eliminated ? <span className={styles.tag}>{fight ? t("jüri", "jury", "评审团") : t("ayrıldı", "left", "已离开")}</span> : null}
+                  {state.winner === seat.id ? <span className={styles.tag}>{fight ? t("kazanan", "winner", "胜出者") : t("yazıcı", "author", "执笔者")}</span> : null}
+                  {state.finalist === seat.id ? <span className={styles.tag}>{t("son denetim adayı", "final review candidate", "最终审查候选")}</span> : null}
                 </div>
                 {fight && health !== undefined && !eliminated ? (
                   <div className={styles.kit}>
                     {health !== undefined && !eliminated ? (
-                      <span className={cx(styles.health, weather.kind === "heat" && styles.healthHeat)} title={`Jüri ortalaması ${Math.round(health * 100)}/100`}>
+                      <span className={cx(styles.health, weather.kind === "heat" && styles.healthHeat)} title={t(`Jüri ortalaması ${Math.round(health * 100)}/100`, `Jury average ${Math.round(health * 100)}/100`, `评审平均分 ${Math.round(health * 100)}/100`)}>
                         <i style={{ width: `${Math.round(health * 100)}%` }} />
                       </span>
                     ) : null}
@@ -416,37 +416,37 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
         {card ? (
           <div key={card.key} className={cx(styles.card, styles[`card_${card.tone}`])} aria-live="polite"
             style={{ "--seat": card.seat?.color ?? "#f2c14e", "--card-time": `${1.9 / effectiveSpeed}s` } as CSSProperties}>
-            <span>{card.label}</span>
-            <strong>{card.title}</strong>
+            <span>{localizedCardLabel(card.label, t)}</span>
+            <strong>{localizedCardTitle(card, t)}</strong>
           </div>
         ) : null}
         {ready && events.length ? (
-          <div className={cx(styles.weather, styles[`weather_${weather.kind}`])} title={`${WEATHER_LABELS[weather.kind]} · ${weather.reason}`} aria-label={`Hava: ${WEATHER_LABELS[weather.kind]}, ${weather.reason}`}>
+          <div className={cx(styles.weather, styles[`weather_${weather.kind}`])} title={`${weatherLabel} · ${weatherReason}`} aria-label={t(`Hava: ${weatherLabel}, ${weatherReason}`, `Weather: ${weatherLabel}, ${weatherReason}`, `天气：${weatherLabel}，${weatherReason}`)}>
             <span className={styles.weatherIcon} aria-hidden />
-            <strong>{WEATHER_LABELS[weather.kind]}</strong>
-            <span>{weather.reason}</span>
+            <strong>{weatherLabel}</strong>
+            <span>{weatherReason}</span>
           </div>
         ) : null}
-        {viewerCaption || caption ? <div className={styles.caption} aria-live={live && !viewerCaption ? "polite" : "off"}>{viewerCaption ?? caption}</div> : null}
-        {seats.length === 0 ? <div className={styles.empty}>Modeller {fight ? "sahaya" : "masaya"} geliyor…</div> : null}
+        {caption ? <div className={styles.caption} aria-live={live ? "polite" : "off"}>{caption}</div> : null}
+        {seats.length === 0 ? <div className={styles.empty}>{fight ? t("Modeller sahaya geliyor…", "Models are entering the arena…", "模型正在进入竞技场…") : t("Modeller masaya geliyor…", "Models are joining the table…", "模型正在加入讨论桌…")}</div> : null}
       </div>
 
       {quote ? (
-        <section className={cx(styles.speechDeck, styles[`enter_${entranceFor(quote)}`])} aria-label="Bu anın kaydedilen açıklaması"
+        <section className={cx(styles.speechDeck, styles[`enter_${entranceFor(quote)}`])} aria-label={t("Bu anın kaydedilen açıklaması", "Recorded explanation of this moment", "此刻的已记录说明")}
           style={{ "--seat": seatOf(quote.actorId)?.color ?? "#f2c14e" } as CSSProperties}>
           <div className={styles.speechMeta}>
-            <strong title={seatOf(quote.actorId)?.model ?? undefined}>{seatOf(quote.actorId)?.label ?? "Masa"}</strong>
-            <span>{kindLabel(quote.kind, mode)}{quote.targetId && seatOf(quote.targetId) ? ` → ${seatOf(quote.targetId)!.label}` : ""}</span>
-            <small>Kaydedilen açıklama</small>
+            <strong title={seatOf(quote.actorId)?.model ?? undefined}>{seatOf(quote.actorId)?.label ?? t("Masa", "Table", "讨论桌")}</strong>
+            <span>{eventLabel(quote.kind)}{quote.targetId && seatOf(quote.targetId) ? ` → ${seatOf(quote.targetId)!.label}` : ""}</span>
+            <small>{t("Kaydedilen açıklama", "Recorded explanation", "已记录说明")}</small>
           </div>
-          <SpeechQuote key={quote.seq} text={quote.kind === "weapon" && quote.dimension ? weaponName(quote.dimension) : quote.text} animate={playing && current?.kind !== "thinking"} speed={effectiveSpeed} />
-          {quote.kind === "critique" && quote.score !== null ? <span className={styles.reviewScore}>Bu değerlendirme: {juryScoreText(quote.score)}</span> : null}
+          <SpeechQuote key={quote.seq} text={quote.kind === "weapon" && quote.dimension ? equipmentLabel(quote.dimension) : quote.text} animate={playing && current?.kind !== "thinking"} speed={effectiveSpeed} />
+          {quote.kind === "critique" && quote.score !== null ? <span className={styles.reviewScore}>{t("Bu değerlendirme:", "This review:", "本次评审：")} {juryScoreText(quote.score)}</span> : null}
         </section>
       ) : null}
 
       {/* Interactive Round Timeline Scrubber */}
       {events.length > 0 ? (
-        <div className={styles.timelineBar} role="region" aria-label="Tur çizelgesi ve ilerleme">
+        <div className={styles.timelineBar} role="region" aria-label={t("Tur çizelgesi ve ilerleme", "Round timeline and progress", "轮次时间线与进度")}>
           <div className={styles.timelineRounds}>
             {roundSegments.map((segment) => {
               const isCurrentRound = state.round === segment.round;
@@ -456,7 +456,7 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
                   type="button"
                   className={cx(styles.timelineRoundBtn, isCurrentRound && styles.timelineRoundActive)}
                   onClick={() => jump(segment.startIndex)}
-                  title={`${segment.label} (${segment.count} olay) — bu tura atla`}
+                  title={t(`${segment.label} (${segment.count} olay) — bu tura atla`, `${segment.label} (${segment.count} events) — jump to this round`, `${segment.label}（${segment.count} 个事件）— 跳转到此轮`)}
                   style={{ flex: Math.max(1, segment.count) }}
                 >
                   <span className={styles.timelineRoundLabel}>{segment.label}</span>
@@ -474,7 +474,7 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
               const targetIdx = Math.round(ratio * (events.length - 1));
               jump(targetIdx);
             }}
-            title="İstediğin ana atlamak için çizelgeye tıkla"
+            title={t("İstediğin ana atlamak için çizelgeye tıkla", "Click the timeline to jump to a moment", "点击时间线跳转到某个时刻")}
           >
             <div className={styles.scrubberProgress} style={{ width: `${progressPercent}%` }} />
             {milestones.map((m) => {
@@ -500,67 +500,50 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
             <div className={styles.scrubberThumb} style={{ left: `${progressPercent}%` }} />
           </div>
           <input className={styles.timelineSeek} type="range" min={-1} max={events.length - 1} value={index} step={1}
-            aria-label="İzleme anını seç" aria-valuetext={index < 0 ? "Başlangıç" : `${index + 1}/${events.length} · ${kindLabel(events[index].kind, mode)}`}
+            aria-label={t("İzleme anını seç", "Choose a replay moment", "选择回放时刻")} aria-valuetext={index < 0 ? t("Başlangıç", "Start", "开始") : `${index + 1}/${events.length} · ${eventLabel(events[index].kind)}`}
             onChange={(event) => jump(Number(event.target.value))} />
         </div>
       ) : null}
 
       <div className={styles.controls}>
-        <button type="button" className="btn" onClick={restart} disabled={!events.length}>Baştan izle</button>
-        {!live ? <button type="button" className="btn" onClick={() => jump(events.length - 1)} disabled={index >= events.length - 1}>Sonuca atla</button> : null}
-        <button type="button" className="btn" onClick={() => jump(previousSpoken(events, index))} disabled={index <= 0} aria-label="Önceki adım">◀</button>
-        <button type="button" className="btn" onClick={() => { setViewerGesture(null); if (index >= events.length - 1 && !live) { restart(); return; } setPlaying((value) => !value); }} disabled={!events.length}>
-          {playing ? "Duraklat" : "Oynat"}
+        <button type="button" className="btn" onClick={restart} disabled={!events.length}>{t("Baştan izle", "Watch from the start", "从头观看")}</button>
+        {!live ? <button type="button" className="btn" onClick={() => jump(events.length - 1)} disabled={index >= events.length - 1}>{t("Sonuca atla", "Jump to the result", "跳转到结果")}</button> : null}
+        <button type="button" className="btn" onClick={() => jump(previousSpoken(events, index))} disabled={index <= 0} aria-label={t("Önceki adım", "Previous step", "上一步")}>◀</button>
+        <button type="button" className="btn" onClick={() => { if (index >= events.length - 1 && !live) { restart(); return; } setPlaying((value) => !value); }} disabled={!events.length}>
+          {playing ? t("Duraklat", "Pause", "暂停") : t("Oynat", "Play", "播放")}
         </button>
-        <button type="button" className="btn" onClick={() => jump(nextSpoken(events, index))} disabled={index >= events.length - 1} aria-label="Sonraki adım">▶</button>
+        <button type="button" className="btn" onClick={() => jump(nextSpoken(events, index))} disabled={index >= events.length - 1} aria-label={t("Sonraki adım", "Next step", "下一步")}>▶</button>
         <button type="button" className={cx("btn", soundOn && styles.soundOn)} onClick={toggleSound} aria-pressed={soundOn}>
-          {soundOn ? "Ses açık" : "Ses kapalı"}
+          {soundOn ? t("Ses açık", "Sound on", "声音已开启") : t("Ses kapalı", "Sound off", "声音已关闭")}
         </button>
-        <div className={styles.speeds} role="group" aria-label="Oynatma hızı">
+        <div className={styles.speeds} role="group" aria-label={t("Oynatma hızı", "Playback speed", "播放速度")}>
           {SPEEDS.map((value) => (
             <button key={value} type="button" className={cx(styles.speed, speed === value && styles.speedOn)} aria-pressed={speed === value} onClick={() => setSpeed(value)}>{value}x</button>
           ))}
         </div>
-        <button type="button" className={cx("btn", readingTempo && styles.readingOn)} aria-pressed={readingTempo} onClick={() => setReadingTempo((value) => !value)} title="Uzun açıklamalara daha fazla okuma süresi ayır">Okuma temposu</button>
-        {live && !following ? <button type="button" className="btn" onClick={() => { setViewerGesture(null); setFollowing(true); setPlaying(true); }}>Canlıya dön</button> : null}
-        <span className={styles.legend}><span className={styles.legendDot} /> yeşil: konuşan · yanıp sönen: düşünen</span>
+        <button type="button" className={cx("btn", readingTempo && styles.readingOn)} aria-pressed={readingTempo} onClick={() => setReadingTempo((value) => !value)} title={t("Uzun açıklamalara daha fazla okuma süresi ayır", "Allow more time to read longer explanations", "为较长的说明留出更多阅读时间")}>{t("Okuma temposu", "Reading pace", "阅读节奏")}</button>
+        {live && !following ? <button type="button" className="btn" onClick={() => { setFollowing(true); setPlaying(true); }}>{t("Canlıya dön", "Return to live", "返回实时")}</button> : null}
+        <span className={styles.legend}><span className={styles.legendDot} /> {t("yeşil: konuşan · yanıp sönen: düşünen", "green: speaking · pulsing: thinking", "绿色：发言 · 闪动：思考")}</span>
       </div>
 
-      <StageControls seats={seats} ready={ready} onMotion={(seatId, gesture) => {
-        const scene = sceneRef.current;
-        if (!scene?.playGesture) return false;
-        clearTransient();
-        setPlaying(false); setFollowing(false);
-        // Pause this visual moment and clear its action before a deliberate viewer gesture.
-        // The backend job and its real event ledger continue independently.
-        sceneKeyRef.current = sceneUpdateKey(state, current ?? null, seatKey);
-        shownRef.current = current?.seq ?? -1;
-        scene.setSpeed(speed);
-        scene.sync(state, current ?? null, false);
-        scene.setWeather(weather, false);
-        hostRef.current?.scrollIntoView({ block: "center", behavior: "instant" });
-        const accepted = scene.playGesture(seatId, gesture);
-        if (accepted) setViewerGesture({ seatId, label: getGesture(gesture)?.label ?? gesture, seq: cursorSeq });
-        return accepted;
-      }} />
       <PromptJourney stage={live ? "working" : promptReady ? "ready" : "review"} councilEvidence={events.some((event) => event.kind === "critique" || event.kind === "approval" || event.kind === "objection")} compact />
       {fight ? <details className={styles.equipmentGuide}>
-        <summary>Ekipmanlar promptun hangi gücünü gösteriyor?</summary>
-        <p>Silahlar karakterlerin kanadında veya sırtında taşınır. Her biri jürinin değerlendirdiği bir ölçütü temsil eder; bu andaki sahipleri aşağıda.</p>
-        <dl>{COUNCIL_DIMENSIONS.map((dimension) => <div key={dimension}><dt>{COUNCIL_WEAPONS[dimension].name} · {COUNCIL_WEAPONS[dimension].meaning}</dt><dd>{seatOf(state.weapons[dimension])?.label ?? "Henüz verilmedi"}</dd></div>)}</dl>
+        <summary>{t("Ekipmanlar promptun hangi gücünü gösteriyor?", "Which prompt strengths does the equipment represent?", "装备代表提示词的哪些优势？")}</summary>
+        <p>{t("Silahlar karakterlerin kanadında veya sırtında taşınır. Her biri jürinin değerlendirdiği bir ölçütü temsil eder; bu andaki sahipleri aşağıda.", "Equipment is carried on each character’s wing or back. Each piece represents a jury criterion; its current owner is listed below.", "装备佩戴在角色的翅膀或背部。每件装备对应一项评审标准；当前持有者列在下方。")}</p>
+        <dl>{COUNCIL_DIMENSIONS.map((dimension) => <div key={dimension}><dt>{equipmentLabel(dimension)}</dt><dd>{seatOf(state.weapons[dimension])?.label ?? t("Henüz verilmedi", "Not yet awarded", "尚未授予")}</dd></div>)}</dl>
       </details> : null}
 
       {/* Transcript Filter Controls */}
-      <div className={styles.transcriptControls} role="region" aria-label="Konuşma dökümü filtreleri">
-        <div className={styles.actorFilters} role="group" aria-label="Konuşmacıya göre filtrele">
-          <span className={styles.filterTitle}>Konuşmacı:</span>
+      <div className={styles.transcriptControls} role="region" aria-label={t("Konuşma dökümü filtreleri", "Transcript filters", "对话记录筛选")}>
+        <div className={styles.actorFilters} role="group" aria-label={t("Konuşmacıya göre filtrele", "Filter by speaker", "按发言者筛选")}>
+          <span className={styles.filterTitle}>{t("Konuşmacı:", "Speaker:", "发言者：")}</span>
           <button
             type="button"
             className={cx(styles.filterPill, actorFilter === null && styles.filterPillActive)}
             aria-pressed={actorFilter === null}
             onClick={() => setActorFilter(null)}
           >
-            Tümü
+            {t("Tümü", "All", "全部")}
           </button>
           {seats.map((seat) => (
             <button
@@ -583,17 +566,17 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
             onClick={() => setDecisionsOnly((v) => !v)}
             aria-pressed={decisionsOnly}
           >
-            Sadece Kararlar & Önemli Anlar
+            {t("Sadece Kararlar & Önemli Anlar", "Only decisions & key moments", "仅显示决定与关键时刻")}
           </button>
           <span className={styles.filterCount}>
-            {filteredEvents.length}/{visibleEvents.length} olay
+            {filteredEvents.length}/{visibleEvents.length} {t("olay", "events", "个事件")}
           </span>
         </div>
       </div>
 
-      <ol className={styles.transcript} ref={transcriptRef} aria-label="Konuşma akışı">
+      <ol className={styles.transcript} ref={transcriptRef} aria-label={t("Konuşma akışı", "Conversation timeline", "对话时间线")}>
         {filteredEvents.length === 0 ? (
-          <li className={styles.emptyFiltered}>Seçilen filtrelere uygun konuşma olayı bulunamadı.</li>
+          <li className={styles.emptyFiltered}>{t("Seçilen filtrelere uygun konuşma olayı bulunamadı.", "No conversation events match these filters.", "没有符合所选条件的对话事件。")}</li>
         ) : (
           filteredEvents.map(({ event, position }) => {
             const seat = seatOf(event.actorId);
@@ -603,8 +586,8 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
                 className={cx(styles.line, position === currentSpoken && styles.lineCurrent, position > index && styles.lineFuture)}>
                 <button type="button" onClick={() => jump(position)}>
                   <span className={styles.lineDot} style={{ background: seat?.color ?? "var(--text-faint)" }} />
-                  <span className={styles.lineWho}>{seat?.label ?? "Masa"}{target ? ` → ${target.label}` : ""}</span>
-                  <span className={styles.lineKind}>{kindLabel(event.kind, mode)}{event.dimension ? ` · ${weaponName(event.dimension)}` : ""}</span>
+                  <span className={styles.lineWho}>{seat?.label ?? t("Masa", "Table", "讨论桌")}{target ? ` → ${target.label}` : ""}</span>
+                  <span className={styles.lineKind}>{eventLabel(event.kind)}{event.dimension ? ` · ${equipmentLabel(event.dimension)}` : ""}</span>
                   <span className={styles.lineText}>{event.text}</span>
                 </button>
               </li>
@@ -613,24 +596,74 @@ export function CouncilArena({ mode, events, live, promptReady = false }: Counci
         )}
       </ol>
       <p className={styles.note}>
-        Baloncuklar modellerin masada paylaştığı önerilerden, eleştirilerden ve kararlardan alıntıdır; modellerin gizli iç düşünce izi kaydedilmez.
-        {fight ? " Silahlar jürinin altı ölçütteki puanlarını, can barı ise o turdaki jüri ortalamasını gösterir." : ""}
+        {t("Karakterlerin hareketleri çalışma akışına göre otomatik seçilir. ", "Character movements are selected automatically from the work flow. ", "角色动作根据工作流程自动选择。")}
+        {t("Baloncuklar modellerin masada paylaştığı önerilerden, eleştirilerden ve kararlardan alıntıdır; modellerin gizli iç düşünce izi kaydedilmez.", "Bubbles quote the models’ shared proposals, critiques and decisions. Private model reasoning is not recorded.", "气泡引用模型公开分享的提案、评审和决定，不记录模型的私有思考过程。")}
+        {fight ? t(" Silahlar jürinin altı ölçütteki puanlarını, can barı ise o turdaki jüri ortalamasını gösterir.", " Equipment represents scores on six criteria; the bar shows that round’s jury average.", " 装备代表六项评审标准的得分；状态条显示该轮评审平均分。") : ""}
       </p>
     </section>
   );
 }
 
-function captionFor(event: CouncilEvent | undefined, mode: CouncilMode, seatOf: (id: string | null | undefined) => Seat | undefined): string | null {
+function captionFor(event: CouncilEvent | undefined, mode: CouncilMode, seatOf: (id: string | null | undefined) => Seat | undefined, t: Translate, equipmentLabel: (dimension: CouncilDimension) => string): string | null {
   if (!event) return null;
   const who = seatOf(event.actorId)?.label ?? modelLabel(event.model);
   switch (event.kind) {
     case "memory": return event.text;
     case "replace": return event.text;
-    case "weapon": return event.dimension ? `Silah kazandı: ${weaponName(event.dimension)} → ${who}` : null;
-    case "eliminated": return `${who} elendi ve jüri sırasına geçti`;
-    case "winner": return mode === "competition" ? `Kazanan: ${who}` : `Masa uzlaştı · ortak metni yazan: ${who}`;
-    case "finalist": return `Uzlaşma sağlanmadı · son denetime seçilen: ${who}`;
-    case "draft": return `${who} ortak metni ${mode === "collaboration" ? "masaya koydu" : "yazdı"}`;
+    case "weapon": return event.dimension ? t(`Silah kazandı: ${equipmentLabel(event.dimension)} → ${who}`, `Equipment earned: ${equipmentLabel(event.dimension)} → ${who}`, `获得装备：${equipmentLabel(event.dimension)} → ${who}`) : null;
+    case "eliminated": return t(`${who} elendi ve jüri sırasına geçti`, `${who} was eliminated and joined the jury`, `${who} 被淘汰并加入评审团`);
+    case "winner": return mode === "competition" ? t(`Kazanan: ${who}`, `Winner: ${who}`, `胜出者：${who}`) : t(`Masa uzlaştı · ortak metni yazan: ${who}`, `The table reached consensus · shared draft author: ${who}`, `讨论桌达成共识 · 共同草稿执笔者：${who}`);
+    case "finalist": return t(`Uzlaşma sağlanmadı · son denetime seçilen: ${who}`, `No consensus · selected for final review: ${who}`, `未达成共识 · 选入最终审查：${who}`);
+    case "draft": return t(`${who} ortak metni ${mode === "collaboration" ? "masaya koydu" : "yazdı"}`, `${who} ${mode === "collaboration" ? "presented" : "wrote"} the shared draft`, `${who} ${mode === "collaboration" ? "提交了" : "写出了"}共同草稿`);
     default: return null;
   }
+}
+
+/** Localize scene-generated captions while leaving recorded model excerpts intact. */
+const CARD_LABELS: Record<string, [string, string]> = {
+  Elendi: ["Eliminated", "淘汰"], Ayrıldı: ["Left the table", "已离开"],
+  Kazanan: ["Winner", "胜出者"], Uzlaşma: ["Consensus", "共识"],
+  "Son denetime seçildi": ["Selected for final review", "选入最终审查"],
+  "Yeni silah": ["New equipment", "新装备"], Kapışma: ["Competition", "竞赛"], Masa: ["Table", "讨论桌"],
+};
+
+function localizedCardLabel(label: string, t: Translate): string {
+  const localized = CARD_LABELS[label];
+  return localized ? t(label, ...localized) : label;
+}
+
+const EQUIPMENT_NAMES: Record<string, [string, string]> = {
+  Kılıç: ["Sword", "剑"], Yay: ["Bow", "弓"], Kalkan: ["Shield", "盾"],
+  Çekiç: ["Hammer", "锤"], Mızrak: ["Spear", "矛"], Asa: ["Staff", "杖"],
+};
+
+function localizedCardTitle(card: TitleCard, t: Translate): string {
+  if (card.tone === "round") {
+    const round = card.key.slice("round-".length);
+    return t(card.title, `ROUND ${round}`, `第 ${round} 轮`);
+  }
+  const localized = card.tone === "weapon" ? EQUIPMENT_NAMES[card.title] : undefined;
+  return localized ? t(card.title, ...localized) : card.title;
+}
+
+const WEATHER_NAMES: Record<WeatherKind, [string, string]> = {
+  sunny: ["Sunny", "晴天"], cloudy: ["Cloudy", "多云"], rainy: ["Rainy", "雨天"],
+  storm: ["Storm", "风暴"], heat: ["Extreme heat", "高温"],
+};
+function localizedWeatherLabel(kind: WeatherKind, t: Translate): string {
+  return t(WEATHER_LABELS[kind], ...WEATHER_NAMES[kind]);
+}
+
+const WEATHER_REASONS: Record<string, [string, string]> = {
+  "Modeller yerini alıyor": ["Models are taking their seats", "模型正在就位"],
+  "Sonuç belli oldu": ["The result has been decided", "结果已确定"], Eleme: ["Elimination", "淘汰"],
+  "Sistem zorlanıyor: yanıtsız çağrılar ve yedek geçişleri": ["System strain: unanswered calls and reserve replacements", "系统负载过高：调用未获响应与替补切换"],
+  "İtirazlar arttı": ["More objections", "异议增加"], "Düşük puanlar": ["Low scores", "得分较低"],
+  "Onaylar geliyor": ["Approvals are coming in", "收到认可"], "Puanlar yüksek": ["High scores", "得分较高"],
+  "İnceleme sürüyor": ["Research is in progress", "研究进行中"], "Son denetim": ["Final review", "最终审查"],
+  "Tartışma sürüyor": ["Discussion is in progress", "讨论进行中"],
+};
+function localizedWeatherReason(reason: string, t: Translate): string {
+  const localized = WEATHER_REASONS[reason];
+  return localized ? t(reason, ...localized) : reason;
 }

@@ -34,7 +34,7 @@ describe("composer draft recovery", () => {
   it("uses fresh defaults for first use or unavailable storage", () => {
     const storage = new MemoryStorage();
     const initial = readComposerDraft(storage);
-    expect(initial).toEqual({ text: "", target: "auto", language: "tr", mode: "auto", executionContext: "chat", councilMode: "competition" });
+    expect(initial).toEqual({ text: "", target: "auto", language: "tr", mode: "auto", executionContext: "chat", councilMode: "single" });
     expect(readComposerDraft(null)).toEqual(DEFAULT_COMPOSER_DRAFT);
     initial.text = "Unsubmitted edit";
     expect(readComposerDraft(storage).text).toBe("");
@@ -53,7 +53,8 @@ describe("composer draft recovery", () => {
     const storage = new MemoryStorage();
     const legacy = JSON.stringify({ text: draft.text, target: draft.target, language: draft.language, mode: draft.mode });
     storage.setItem(COMPOSER_DRAFT_KEY, legacy);
-    expect(readComposerDraft(storage)).toEqual(draft);
+    // Older drafts had no table choice; they now start on the fast single-model path.
+    expect(readComposerDraft(storage)).toEqual({ ...draft, councilMode: "single" });
     expect(storage.getItem(COMPOSER_DRAFT_KEY)).toBe(legacy);
   });
 

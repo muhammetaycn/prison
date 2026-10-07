@@ -630,7 +630,8 @@
   color: var(--text-faint);
   font-family: var(--font-mono);
   font-size: 11px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .lineText {

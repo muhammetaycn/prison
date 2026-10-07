@@ -18,6 +18,9 @@ import { watchOperationProgress, type OperationProgressWatch, type OperationWatc
 import { PrisonSidebar } from "@/ui/prison-sidebar/PrisonSidebar";
 import { PrisonView } from "@/ui/prison-view/PrisonView";
 import { ProviderSettings } from "@/ui/settings/ProviderSettings";
+import { I18nProvider, useI18n } from "@/ui/i18n";
+import { useVocabulary } from "@/ui/i18n/vocabulary";
+import { HandoffTaskProvider } from "@/ui/participation/HandoffTaskContext";
 import styles from "./PrisonApp.module.css";
 
 export interface BusyState {
@@ -39,6 +42,12 @@ function writeActiveIdToUrl(id: string | null): void {
 }
 
 export function PrisonApp() {
+  return <I18nProvider><PrisonWorkspace /></I18nProvider>;
+}
+
+function PrisonWorkspace() {
+  const { t } = useI18n();
+  const label = useVocabulary();
   const [engine, setEngine] = useState<EngineStatus | null>(null);
   const [council, setCouncil] = useState<CouncilMetadata | null>(null);
   const [engineLoading, setEngineLoading] = useState(true);
@@ -87,7 +96,7 @@ export function PrisonApp() {
     try {
       return await operation();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Beklenmeyen bir hata oluştu.");
+      setError(err instanceof ApiError ? err.message : t("Beklenmeyen bir hata oluştu.", "An unexpected error occurred.", "发生了意外错误。"));
       if (err instanceof ApiError && err.details?.operation) {
         setOperation(err.details.operation);
         const failedProgress = err.details.operation.progress;
@@ -98,7 +107,7 @@ export function PrisonApp() {
       operationInFlight.current = false;
       setBusy(null);
     }
-  }, [mutationBlocked]);
+  }, [mutationBlocked, t]);
 
   const refreshSummary = useCallback((prison: Prison) => {
     const summary = summarizePrison(prison);
@@ -189,7 +198,7 @@ export function PrisonApp() {
   }, [showPrison]);
 
   const analyze = async (input: ComposerInput): Promise<boolean> => {
-    const result = await run({ kind: "analyze", label: "İstek anlaşılıyor ve çözüm planı hazırlanıyor" }, () => api.create(input));
+    const result = await run({ kind: "analyze", label: t("İstek anlaşılıyor ve çözüm planı hazırlanıyor", "Understanding your request and preparing a plan", "正在理解你的请求并制定方案") }, () => api.create(input));
     if (result) showPrison(result.prison);
     return Boolean(result);
   };
@@ -220,15 +229,15 @@ export function PrisonApp() {
   const select = async (id: string) => {
     if (id === active?.id || operationInFlight.current) return;
     const selection = ++selectionEpoch.current;
-    const result = await run({ kind: "load", label: "Prison açılıyor" }, () => api.get(id));
+    const result = await run({ kind: "load", label: t("İstek açılıyor", "Opening request", "正在打开请求") }, () => api.get(id));
     if (result && selectionEpoch.current === selection) showPrison(result.prison);
   };
 
   const remove = async (id: string) => {
     if (operationInFlight.current || mutationBlocked(id)) return;
     const target = prisons.find((p) => p.id === id);
-    if (!window.confirm(`"${target?.title ?? id}" silinsin mi? Bu işlem geri alınamaz.`)) return;
-    const result = await run({ kind: "delete", label: "Siliniyor" }, () => api.remove(id), id);
+    if (!window.confirm(t(`"${target?.title ?? id}" silinsin mi? Bu işlem geri alınamaz.`, `Delete "${target?.title ?? id}"? This cannot be undone.`, `删除“${target?.title ?? id}”？此操作无法撤销。`))) return;
+    const result = await run({ kind: "delete", label: t("Siliniyor", "Deleting", "正在删除") }, () => api.remove(id), id);
     if (result) {
       setPrisons((list) => list.filter((p) => p.id !== id));
       if (active?.id === id) showPrison(null);
@@ -246,9 +255,11 @@ export function PrisonApp() {
   const phase = observed?.id === activeId ? observed.phase : "discovering";
   const remoteBusy: BusyState | null = !activeId || phase === "idle" ? null : {
     kind: phase === "running" ? "compile" : "load",
-    label: phase === "running" ? "Bu görevin devam eden işlemi izleniyor" : phase === "refreshing" ? "Görevin güncel sonucu alınıyor" : "Görevin işlem durumu kontrol ediliyor",
+    label: phase === "running" ? t("Bu görevin devam eden işlemi izleniyor", "Following the ongoing work", "正在跟踪任务进度") : phase === "refreshing" ? t("Görevin güncel sonucu alınıyor", "Retrieving the latest result", "正在获取最新结果") : t("Görevin işlem durumu kontrol ediliyor", "Checking task status", "正在检查任务状态"),
   };
   const displayBusy = busy ?? remoteBusy;
+  const shownVersion = active?.promptVersions.find((version) => version.version === (viewVersion ?? active.activeVersion)) ?? active?.promptVersions.at(-1);
+  const handoffSpec = shownVersion?.specSnapshot ?? active?.spec;
 
   return (
     <div className={styles.shell}>
@@ -272,8 +283,8 @@ export function PrisonApp() {
         {error ? (
           <div className={styles.error} role="alert">
             <span>{error}</span>
-            <button type="button" className="btn btn-ghost" onClick={() => setError(null)} aria-label="Hatayı kapat">
-              Kapat
+            <button type="button" className="btn btn-ghost" onClick={() => setError(null)} aria-label={t("Hatayı kapat", "Dismiss error", "关闭错误提示")}>
+              {t("Kapat", "Close", "关闭")}
             </button>
           </div>
         ) : null}
@@ -285,6 +296,7 @@ export function PrisonApp() {
             setEngine(result.engine); setCouncil(result.council ?? null); setEngineHealth(null);
           }} />
         ) : active ? (
+          <HandoffTaskProvider value={{ goal: handoffSpec?.primaryGoal, rawRequest: active.rawRequest, taskType: handoffSpec?.taskType, deliverables: handoffSpec?.expectedOutput.deliverables, successCriteria: handoffSpec?.successCriteria.map((item) => item.text) }}>
           <PrisonView
             prison={active}
             busy={displayBusy}
@@ -295,44 +307,45 @@ export function PrisonApp() {
             onViewVersion={setViewVersion}
             onCompile={(options) =>
               void withActive(
-                { kind: "compile", label: council?.enabled ? "Modeller prompt adaylarını hazırlıyor ve karşılaştırıyor" : engine?.mode === "ai" ? "AI promptu üretiyor ve denetliyor" : "Prompt hazırlanıyor ve denetleniyor" },
+                { kind: "compile", label: council?.enabled && (options?.councilMode ?? active.compileOptions.councilMode) !== "single" ? t("Modeller prompt adaylarını hazırlıyor ve karşılaştırıyor", "The team is preparing and comparing prompts", "团队正在生成并比较提示词") : engine?.mode === "ai" ? t("AI promptu üretiyor ve denetliyor", "Your AI is generating and checking the prompt", "AI 正在生成并检查提示词") : t("Prompt hazırlanıyor ve denetleniyor", "Preparing and checking the prompt", "正在准备并检查提示词") },
                 (id) => api.compile(id, options),
               )
             }
             onRetryOperation={(failed) =>
-              void withActive({ kind: failed.kind === "compile" ? "compile" : failed.kind === "adjust" ? "modify" : "revise", label: "Kaydedilen işlem yeniden deneniyor" },
+              void withActive({ kind: failed.kind === "compile" ? "compile" : failed.kind === "adjust" ? "modify" : "revise", label: t("Kaydedilen işlem yeniden deneniyor", "Retrying the saved operation", "正在重试已保存的操作") },
                 () => api.retryOperation(failed.id))
             }
             onModify={(action: ModifierAction) =>
-              void withActive({ kind: "modify", label: `${MODIFIER_LABELS[action]} uygulanıyor` }, (id) =>
+              void withActive({ kind: "modify", label: t(`${MODIFIER_LABELS[action]} uygulanıyor`, `Applying: ${label(MODIFIER_LABELS[action])}`, `正在应用：${label(MODIFIER_LABELS[action])}`) }, (id) =>
                 api.modify(id, action),
               )
             }
             onRetarget={(target: TargetAI) =>
-              void withActive({ kind: "modify", label: `${TARGET_LABELS[target]} için derleniyor` }, (id) =>
+              void withActive({ kind: "modify", label: t(`${TARGET_LABELS[target]} için derleniyor`, `Preparing for ${TARGET_LABELS[target]}`, `正在为 ${TARGET_LABELS[target]} 准备`) }, (id) =>
                 api.retarget(id, target),
               )
             }
             onExecutionContext={(executionContext) =>
-              void withActive({ kind: "modify", label: `${EXECUTION_CONTEXT_LABELS[executionContext]} için hazırlanıyor` }, (id) =>
+              void withActive({ kind: "modify", label: t(`${EXECUTION_CONTEXT_LABELS[executionContext]} için hazırlanıyor`, `Preparing for ${label(EXECUTION_CONTEXT_LABELS[executionContext])}`, `正在为${label(EXECUTION_CONTEXT_LABELS[executionContext])}准备`) }, (id) =>
                 api.executionContext(id, executionContext),
               )
             }
             onCouncilMode={(councilMode) =>
-              void withActive({ kind: "modify", label: `${COUNCIL_MODE_LABELS[councilMode]} promptu hazırlıyor` }, (id) =>
+              void withActive({ kind: "modify", label: t(`${COUNCIL_MODE_LABELS[councilMode]} promptu hazırlıyor`, `Preparing prompt: ${label(COUNCIL_MODE_LABELS[councilMode])}`, `正在生成提示词：${label(COUNCIL_MODE_LABELS[councilMode])}`) }, (id) =>
                 api.councilMode(id, councilMode),
               )
             }
             onRevise={(message) =>
-              withActive({ kind: "revise", label: "Revizyon uygulanıyor" }, (id) => api.revise(id, message))
+              withActive({ kind: "revise", label: t("Revizyon uygulanıyor", "Applying your revision", "正在应用你的修改") }, (id) => api.revise(id, message))
             }
             onClarify={(clarifications) =>
-              withActive({ kind: "revise", label: "Yanıtlar işleniyor ve plan güncelleniyor" }, (id) => api.clarify(id, clarifications))
+              withActive({ kind: "revise", label: t("Yanıtlar işleniyor ve plan güncelleniyor", "Processing your answers and updating the plan", "正在处理你的回答并更新方案") }, (id) => api.clarify(id, clarifications))
             }
             onRestore={(version) =>
-              void withActive({ kind: "restore", label: `v${version} geri yükleniyor` }, (id) => api.restore(id, version))
+              void withActive({ kind: "restore", label: t(`v${version} geri yükleniyor`, `Restoring v${version}`, `正在恢复 v${version}`) }, (id) => api.restore(id, version))
             }
           />
+          </HandoffTaskProvider>
         ) : (
           <Composer engine={engine} council={council} busy={busy?.kind === "analyze"} onSubmit={analyze} />
         )}

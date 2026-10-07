@@ -69,6 +69,7 @@ export class PrisonService {
     private readonly council: CouncilDeps | null = null,
     operationState: PrisonOperationState = createPrisonOperationState(),
     private readonly checkpoints?: CouncilCheckpointRepository,
+    private readonly councilConfigurationError: string | null = null,
   ) {
     this.lock = operationState.lock;
     this.progress = operationState.progress;
@@ -84,6 +85,16 @@ export class PrisonService {
   }
 
   hasActiveMutation(id: string): boolean { return this.lock.isLocked(id); }
+
+  private assertCouncilConfiguration(mode: CouncilMode, language: Language): void {
+    if (mode === "single" || !this.councilConfigurationError) return;
+    const message = {
+      tr: "Seçilen masa/kapışma yöntemi kullanılamıyor. API ayarlarını düzelt veya hızlı tek model yöntemini seç.",
+      en: "The selected team mode is unavailable. Repair the API settings or select the fast single-model mode.",
+      zh: "所选团队模式不可用。请修复 API 设置，或选择快速单模型模式。",
+    }[language];
+    throw new AppError("invalid_input", `${message} ${this.councilConfigurationError}`, this.councilConfigurationError);
+  }
 
   private publishProgress(id: string, progress: OperationProgress | null) {
     if (progress) this.progress.set(id, progress); else this.progress.delete(id);
@@ -137,6 +148,7 @@ export class PrisonService {
     if (rawRequest.length > REQUEST_LIMITS.max) {
       throw new AppError("invalid_input", `İstek en fazla ${REQUEST_LIMITS.max} karakter olabilir.`);
     }
+    this.assertCouncilConfiguration(input.councilMode ?? "single", input.language);
     try {
       const prison = await runAnalysisPipeline({ ...input, rawRequest }, this.provider, this.now);
       await this.repo.save(prison);
@@ -155,6 +167,7 @@ export class PrisonService {
     return this.mutate(id, async (prison) => {
       prison = { ...prison, compileOptions: { ...prison.compileOptions, ...options,
         ...(options.executionContext !== undefined ? { agentMode: options.executionContext === "agent" } : {}) } };
+      this.assertCouncilConfiguration(prison.compileOptions.councilMode, prison.language);
       const first = prison.status === "READY_FOR_COMPILE";
       const ready = first ? prison : transition(prison, "READY_FOR_COMPILE", "regenerate", this.now());
       return runCompilePipeline(
@@ -168,6 +181,7 @@ export class PrisonService {
   async adjust(id: string, adjustment: Adjustment): Promise<Prison> {
     return this.mutate(id, async (prison) => {
       if (prison.promptVersions.length === 0) throw new AppError("not_ready", "Önce promptu üret.");
+      this.assertCouncilConfiguration(adjustment.kind === "council_mode" ? adjustment.councilMode : prison.compileOptions.councilMode, prison.language);
       return runAdjustmentPipeline(prison, adjustment, this.depsFor(id));
     });
   }
@@ -178,7 +192,10 @@ export class PrisonService {
     if (text.length > REVISION_LIMITS.max) {
       throw new AppError("invalid_input", `Revizyon en fazla ${REVISION_LIMITS.max} karakter olabilir.`);
     }
-    return this.mutate(id, (prison) => runRevisionPipeline(prison, text, this.depsFor(id)));
+    return this.mutate(id, (prison) => {
+      this.assertCouncilConfiguration(prison.compileOptions.councilMode, prison.language);
+      return runRevisionPipeline(prison, text, this.depsFor(id));
+    });
   }
 
   /** Validate against the current task under its lock; generated questions never become owner instructions. */
@@ -204,6 +221,7 @@ export class PrisonService {
       if (answers.some((entry) => !currentQuestions.has(entry.question))) {
         throw new AppError("invalid_input", "Sorular güncel görevle eşleşmiyor; güncel soruları açıp yeniden yanıtla.");
       }
+      this.assertCouncilConfiguration(prison.compileOptions.councilMode, prison.language);
       return runRevisionPipeline(prison, message, this.depsFor(id), answers);
     });
   }

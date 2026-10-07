@@ -3,13 +3,19 @@
 import { useEffect, useState } from "react";
 import styles from "./CouncilArena.module.css";
 
+/** Word units for spaced languages; small Han groups keep unspaced Chinese excerpts readable. */
+export function quoteRevealBoundaries(text: string): number[] {
+  return [...text.matchAll(/[\p{Script=Han}]{1,4}|[^\s\p{Script=Han}]+\s*|\s+/gu)]
+    .map((match) => match.index + match[0].length);
+}
+
 /** Reveals an existing recorded excerpt; it never simulates new model tokens or private reasoning. */
 export function SpeechQuote({ text, animate, speed }: { text: string; animate: boolean; speed: number }) {
   const [length, setLength] = useState(text.length);
   useEffect(() => {
     const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     if (!animate || reduced) { setLength(text.length); return; }
-    const words = [...text.matchAll(/\S+\s*/gu)].map((match) => match.index + match[0].length);
+    const words = quoteRevealBoundaries(text);
     if (!words.length) { setLength(text.length); return; }
     const start = performance.now();
     const duration = Math.max(180, Math.min(1100, text.length * 4) / Math.max(1, speed));

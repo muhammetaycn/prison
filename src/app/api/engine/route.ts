@@ -7,6 +7,6 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return handle(async () => {
     const runtime = getRuntime();
-    return json({ engine: runtime.engine, council: describeCouncil(runtime.council) });
+    return json({ engine: runtime.engine, council: describeCouncil(runtime.council, runtime.councilConfigurationError) });
   });
 }

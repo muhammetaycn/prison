@@ -607,7 +607,7 @@ describe("stalled jury final gate", () => {
 describe("planning while a council is active", () => {
   it("lets approving jurors re-plan when the main engine is temporarily overloaded", async () => {
     // An AI-analysed task carries an execution plan, which a material plan finding refreshes.
-    const value = await runAnalysisPipeline({ rawRequest: "Add a payment system without changing the existing architecture", language: "en", targetAI: "codex" },
+    const value = await runAnalysisPipeline({ rawRequest: "Add a payment system without changing the existing architecture", language: "en", targetAI: "codex", councilMode: "competition" },
       new ScriptedProvider().enqueue("prison_intent", paymentIntent()));
     expect(value.spec.taskPlan).toBeTruthy();
     let critics = 0;

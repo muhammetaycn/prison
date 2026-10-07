@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { RevisionRecord } from "@/models/prison";
+import { useI18n } from "@/ui/i18n";
 import { cx, relativeTime } from "@/ui/lib/format";
 import styles from "./RevisionChat.module.css";
 
 const SUGGESTIONS = [
-  "Bunu daha katı yap.",
-  "Canlı deploy yapmasına izin verme.",
-  "Claude için üret.",
-  "Mevcut mimariyi değiştirmesin.",
-];
+  ["Bunu daha katı yap.", "Make this stricter.", "让要求更严格。"],
+  ["Canlı deploy yapmasına izin verme.", "Do not allow deployment to production.", "禁止部署到生产环境。"],
+  ["Claude için üret.", "Generate this for Claude.", "为 Claude 生成。"],
+  ["Mevcut mimariyi değiştirmesin.", "Keep the existing architecture.", "保留现有架构。"],
+] as const;
 
 const MAX_LENGTH = 2000;
 
@@ -23,6 +24,7 @@ interface RevisionChatProps {
 }
 
 export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasPrompt = true }: RevisionChatProps) {
+  const { locale, t } = useI18n();
   const [draft, setDraft] = useState("");
   const listRef = useRef<HTMLOListElement>(null);
   const userRevisions = revisions.filter((r) => r.engine !== "modifier");
@@ -38,10 +40,10 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
   };
 
   return (
-    <section className={styles.root} aria-label="Revizyon">
+    <section className={styles.root} aria-label={t("Revizyon", "Revision", "修订")}>
       <header className={styles.header}>
-        <span className="label">{hasPrompt ? "Revizyon" : "Bilgileri netleştir"}</span>
-        <span className={styles.hint}>{hasPrompt ? "İsteğini ve promptu güncelle." : "Soruları yanıtla ya da görevi düzelt."}</span>
+        <span className="label">{hasPrompt ? t("Revizyon", "Revision", "修订") : t("Bilgileri netleştir", "Clarify the details", "澄清信息")}</span>
+        <span className={styles.hint}>{hasPrompt ? t("İsteğini ve promptu güncelle.", "Update your request and prompt.", "更新需求和提示词。") : t("Soruları yanıtla ya da görevi düzelt.", "Answer the questions or adjust your task.", "回答问题或调整任务。")}</span>
       </header>
 
       {userRevisions.length ? (
@@ -50,8 +52,8 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
             <li key={revision.id} className={styles.entry}>
               <div className={styles.message}>{revision.clarifications?.length ? revision.clarifications.map((entry, index) => (
                 <div key={`${index}:${entry.question}`}>
-                  <p>Sistem sorusu: {entry.question}</p>
-                  <p><strong>Yanıtın:</strong> {entry.answer}</p>
+                  <p>{t("Sistem sorusu:", "System question:", "系统问题：")} {entry.question}</p>
+                  <p><strong>{t("Yanıtın:", "Your answer:", "你的回答：")}</strong> {entry.answer}</p>
                 </div>
               )) : revision.message}</div>
               <div className={styles.reply}>
@@ -62,6 +64,7 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
                       type="button"
                       className={styles.versionLink}
                       onClick={() => onViewVersion(revision.resultVersion!)}
+                      aria-label={t(`Sürüm ${revision.resultVersion} göster`, `Show version ${revision.resultVersion}`, `查看版本 ${revision.resultVersion}`)}
                     >
                       → v{revision.resultVersion}
                     </button>
@@ -75,8 +78,8 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
                   </ul>
                 ) : null}
                 <span className={styles.time}>
-                  {revision.engine === "local" ? "yerel motor · " : ""}
-                  {relativeTime(revision.createdAt)}
+                  {revision.engine === "local" ? t("yerel motor · ", "local engine · ", "本地引擎 · ") : ""}
+                  {relativeTime(revision.createdAt, Date.now(), locale)}
                 </span>
               </div>
             </li>
@@ -85,7 +88,9 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
       ) : null}
 
       <div className={styles.suggestions}>
-        {SUGGESTIONS.map((suggestion) => (
+        {SUGGESTIONS.map((copy) => {
+          const suggestion = t(copy[0], copy[1], copy[2]);
+          return (
           <button
             key={suggestion}
             type="button"
@@ -95,7 +100,8 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
           >
             {suggestion}
           </button>
-        ))}
+          );
+        })}
       </div>
 
       <div className={styles.composer}>
@@ -104,8 +110,8 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
           value={draft}
           maxLength={MAX_LENGTH}
           rows={2}
-          placeholder={hasPrompt ? "Promptu nasıl değiştireyim? (ör. 'Testleri zorunlu kıl.')" : "Eksik bilgileri ya da istek düzeltmesini yaz."}
-          aria-label="Revizyon mesajı"
+          placeholder={hasPrompt ? t("Promptu nasıl değiştireyim? (ör. 'Testleri zorunlu kıl.')", "How should the prompt change? (e.g. 'Require tests.')", "如何修改提示词？（例如：必须执行测试。）") : t("Eksik bilgileri ya da istek düzeltmesini yaz.", "Add missing details or correct your request.", "补充缺失信息或修改需求。")}
+          aria-label={t("Revizyon mesajı", "Revision message", "修订消息")}
           disabled={busy}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -122,7 +128,7 @@ export function RevisionChat({ revisions, busy, onSubmit, onViewVersion, hasProm
           disabled={busy || draft.trim().length < 2}
         >
           {busy ? <span className="spinner" aria-hidden /> : null}
-          {hasPrompt ? "Uygula" : "Bilgileri güncelle"}
+          {hasPrompt ? t("Uygula", "Apply", "应用") : t("Bilgileri güncelle", "Update details", "更新信息")}
         </button>
       </div>
     </section>

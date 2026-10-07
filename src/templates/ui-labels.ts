@@ -102,7 +102,7 @@ export const OPTION_VALUE_LABELS = {
   technicality: { standard: "Standart", technical: "Teknik" },
   scope: { strict: "Katı scope", balanced: "Dengeli scope", open: "Özgür çözüm" },
   executionContext: { chat: "Normal sohbet", mobile: "Telefondaki AI", browser: "Tarayıcıdaki AI", agent: "Araç kullanan agent" },
-  councilMode: { competition: "Yarışma masası", collaboration: "Ekip masası" },
+  councilMode: { single: "Hızlı · tek model", competition: "Yarışma masası (ayrıntılı)", collaboration: "Ekip masası (ayrıntılı)" },
 } satisfies {
   [K in Exclude<keyof CompileOptions, "agentMode" | "jailbreakMode">]: Record<CompileOptions[K], string>;
 };

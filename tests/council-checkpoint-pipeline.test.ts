@@ -72,7 +72,7 @@ function configured(suffix = "initial") {
 async function fixture() {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "prison-council-checkpoint-"));
   roots.push(root);
-  const initial = await runAnalysisPipeline({ rawRequest: "Kafe için bir haftalık içerik önerileri hazırla.", language: "tr", targetAI: "gpt" }, null);
+  const initial = await runAnalysisPipeline({ rawRequest: "Kafe için bir haftalık içerik önerileri hazırla.", language: "tr", targetAI: "gpt", councilMode: "competition" }, null);
   let persisted: Prison = structuredClone(initial);
   const save = vi.fn(async (next: Prison) => { persisted = structuredClone(next); });
   const repository: PrisonRepository = { list: async () => [], get: async () => structuredClone(persisted), save, delete: async () => true };

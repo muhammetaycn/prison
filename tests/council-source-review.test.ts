@@ -89,7 +89,7 @@ async function task(jailbreakMode = false, overrides: Partial<IntentAnalysis> = 
     success_conditions: ["İstenen dört sütun ve başlık hariç 7 veri satırı hazırlandı"], execution_plan: FIXED_PLAN,
     ...overrides,
   }));
-  return runAnalysisPipeline({ rawRequest: owner, language: "tr", targetAI: "gpt", jailbreakMode }, analyzer);
+  return runAnalysisPipeline({ rawRequest: owner, language: "tr", targetAI: "gpt", jailbreakMode, councilMode: "competition" }, analyzer);
 }
 
 function repository(value: Prison) {

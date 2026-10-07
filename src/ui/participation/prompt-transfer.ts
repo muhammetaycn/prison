@@ -1,5 +1,6 @@
 import type { ConcreteTarget } from "@/models/common";
 import type { ExecutionContext } from "@/models/options";
+import { translate, type UILocale } from "@/ui/i18n";
 
 /** The exported content is the chosen version, without additional instructions or metadata. */
 export function promptExport(text: string, version: number, target: ConcreteTarget) {
@@ -57,15 +58,16 @@ export function downloadPrompt(text: string, version: number, target: ConcreteTa
   }
 }
 
-export function promptUseInstruction(targetLabel: string, context: ExecutionContext): string {
+export function promptUseInstruction(targetLabel: string, context: ExecutionContext, locale: UILocale = "tr"): string {
+  const t = (tr: string, en: string, zh: string) => translate(locale, tr, en, zh);
   const destination = context === "agent"
-    ? `${targetLabel} agentinde ilgili projeyi aç.`
+    ? t(`${targetLabel} agentinde ilgili projeyi aç.`, `Open the relevant project in your ${targetLabel} agent.`, `在 ${targetLabel} agent 中打开相关项目。`)
     : context === "mobile"
-      ? `Telefonundaki ${targetLabel} uygulamasında yeni bir sohbet aç.`
+      ? t(`Telefonundaki ${targetLabel} uygulamasında yeni bir sohbet aç.`, `Start a new chat in ${targetLabel} on your phone.`, `在手机的 ${targetLabel} 中新建对话。`)
       : context === "browser"
-        ? `${targetLabel} ile tarayıcıda yeni bir çalışma başlat.`
-        : `${targetLabel} içinde yeni bir sohbet aç.`;
-  return `${destination} Kopyaladığın promptun tamamını tek mesaj olarak yapıştır. Görevin için gereken dosya veya bağlamı ekle, ardından gönder.`;
+        ? t(`${targetLabel} ile tarayıcıda yeni bir çalışma başlat.`, `Start a new task with ${targetLabel} in your browser.`, `在浏览器中使用 ${targetLabel} 开始新任务。`)
+        : t(`${targetLabel} içinde yeni bir sohbet aç.`, `Start a new chat in ${targetLabel}.`, `在 ${targetLabel} 中新建对话。`);
+  return `${destination} ${t("Kopyaladığın promptun tamamını tek mesaj olarak yapıştır. Görevin için gereken dosya veya bağlamı ekle, ardından gönder.", "Paste the entire copied prompt as one message. Add the files or context your task needs, then send it.", "将完整提示词作为一条消息粘贴，添加任务所需的文件或背景，再发送。")}`;
 }
 
 /** Adds an owner-visible directive without deleting their current request. */

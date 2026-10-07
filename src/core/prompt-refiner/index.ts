@@ -1,3 +1,4 @@
+import type { Language } from "@/models/common";
 import type { ResolvedPrison } from "@/models/prison";
 import type { CompiledPrompt } from "@/core/prompt-compiler";
 import { validateOutput } from "@/core/output-validator";
@@ -12,6 +13,24 @@ export interface GenerateRefinedPromptInput {
   compiled: CompiledPrompt;
   /** Feedback from the exact final-text review when the pipeline performs its one repair. */
   feedback?: string;
+}
+
+const DIRECTED_HEADINGS: Record<Language, { direction: string; contract: string }> = {
+  en: { direction: "Task-Specific Direction", contract: "Authoritative Task Contract" },
+  tr: { direction: "Göreve Özel Yönlendirme", contract: "Bağlayıcı Görev Sözleşmesi" },
+  zh: { direction: "任务专属指引", contract: "权威任务契约" },
+};
+
+/** The AI-authored direction goes first; the compiled contract always follows it unchanged. */
+export function combineDirectedPrompt(direction: string, contract: string, language: Language): string {
+  const headings = DIRECTED_HEADINGS[language];
+  return `# ${headings.direction}
+
+${direction}
+
+# ${headings.contract}
+
+${contract}`;
 }
 
 /** AI-authored directive for one isolated task. Provider failures propagate; no local substitution. */

@@ -35,7 +35,7 @@ export async function runAnalysisPipeline(
       jailbreakMode: input.jailbreakMode ?? readJailbreakModeRequest(input.rawRequest) ?? false,
       executionContext: input.executionContext ?? "chat",
       agentMode: input.executionContext === "agent",
-      councilMode: input.councilMode ?? "competition",
+      councilMode: input.councilMode ?? "single",
     },
   };
 

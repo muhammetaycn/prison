@@ -85,7 +85,7 @@ describe("execution environment fidelity", () => {
 
   it("migrates a legacy agent setting without silently relabeling it as ordinary chat", () => {
     const { executionContext: _context, councilMode: _mode, ...legacy } = DEFAULT_COMPILE_OPTIONS;
-    expect(CompileOptionsSchema.parse({ ...legacy, agentMode: true })).toMatchObject({ executionContext: "agent", agentMode: true, councilMode: "competition" });
+    expect(CompileOptionsSchema.parse({ ...legacy, agentMode: true })).toMatchObject({ executionContext: "agent", agentMode: true, councilMode: "single" });
     expect(CompileOptionsSchema.parse(legacy)).toMatchObject({ executionContext: "chat", agentMode: false });
     expect(CompileOptionsSchema.safeParse({ ...legacy, executionContext: "unrestricted" }).success).toBe(false);
   });

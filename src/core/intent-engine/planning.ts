@@ -39,25 +39,26 @@ function localExecutionPlan(prison: ResolvedPrison): ExecutionPlan {
   const { spec, language } = prison;
   const profile = resolveTaskProfile(spec.taskType);
   const tr = language === "tr";
-  const verify = tr ? "Sonucu belirtilen gereksinimlere ve başarı kriterlerine göre doğrula" : "Verify the result against the stated requirements and success criteria";
+  const zh = language === "zh";
+  const verify = tr ? "Sonucu belirtilen gereksinimlere ve başarı kriterlerine göre doğrula" : zh ? "依据指定的需求和成功标准验证结果" : "Verify the result against the stated requirements and success criteria";
   const actions = dedupeTexts(spec.requiredActions.map((item) => item.text));
   if (!actions.length) actions.push(...renderLines(profile.defaultActions, spec.flags, language));
   if (!actions.length) actions.push(spec.primaryGoal);
   if (actions.length === 1) actions.push(verify);
   const recommended = prison.targetAI !== "auto" ? prison.targetAI : spec.requestedTarget ?? (spec.flags.codingRequired && spec.flags.existingSystem ? "codex" : profile.autoTarget);
   const targetReason = prison.targetAI !== "auto"
-    ? (tr ? `Kullanıcının seçtiği ${recommended} hedefi korunur.` : `Respect the user's selected ${recommended} target.`)
+    ? (tr ? `Kullanıcının seçtiği ${recommended} hedefi korunur.` : zh ? `保留用户选择的 ${recommended} 目标。` : `Respect the user's selected ${recommended} target.`)
     : spec.requestedTarget
-      ? (tr ? `İstekte açıkça belirtilen ${recommended} hedefi kullanılır.` : `Use ${recommended}, which the request names explicitly.`)
-      : (tr ? `${profile.label.tr} görevi için yerel yönlendirme kuralı ${recommended} hedefini önerir.` : `The local routing rule for ${profile.label.en} recommends ${recommended}.`);
+      ? (tr ? `İstekte açıkça belirtilen ${recommended} hedefi kullanılır.` : zh ? `使用请求明确指定的 ${recommended} 目标。` : `Use ${recommended}, which the request names explicitly.`)
+      : (tr ? `${profile.label.tr} görevi için yerel yönlendirme kuralı ${recommended} hedefini önerir.` : zh ? `对于${profile.label.zh}任务，本地路由规则建议使用 ${recommended}。` : `The local routing rule for ${profile.label.en} recommends ${recommended}.`);
   return normalizeExecutionPlan({
-    approach: tr ? `Belirtilen görev adımlarını mevcut kısıtlar içinde uygula: ${spec.primaryGoal}` : `Follow the stated task steps within the existing constraints: ${spec.primaryGoal}`,
+    approach: tr ? `Belirtilen görev adımlarını mevcut kısıtlar içinde uygula: ${spec.primaryGoal}` : zh ? `在现有约束内执行指定的任务步骤：${spec.primaryGoal}` : `Follow the stated task steps within the existing constraints: ${spec.primaryGoal}`,
     steps: actions.slice(0, 8).map((action, index) => ({
       action,
-      purpose: tr ? "İstenen sonucu mevcut görev kapsamında ilerlet." : "Advance the requested outcome within the current task scope.",
+      purpose: tr ? "İstenen sonucu mevcut görev kapsamında ilerlet." : zh ? "在当前任务范围内推进用户要求的结果。" : "Advance the requested outcome within the current task scope.",
       verification: spec.successCriteria[index]?.text ?? verify,
     })),
-    clarifying_questions: spec.unknowns.slice(0, 6).map((item) => tr ? `Şunu netleştir: ${item.text}` : `Please clarify: ${item.text}`),
+    clarifying_questions: spec.unknowns.slice(0, 6).map((item) => tr ? `Şunu netleştir: ${item.text}` : zh ? `请明确：${item.text}` : `Please clarify: ${item.text}`),
     recommended_target: recommended,
     target_rationale: targetReason,
   });

@@ -46,6 +46,7 @@
   background: var(--panel-raised);
   border: 1px solid var(--line-strong);
   font-size: 13.5px;
+  overflow-wrap: anywhere;
 }
 
 .reply {
@@ -65,6 +66,8 @@
 .replyTitle {
   font-size: 13.5px;
   color: var(--text);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .versionLink {
@@ -103,8 +106,12 @@
 
 .suggestion {
   background: transparent;
-  height: 26px;
-  padding: 0 10px;
+  height: auto;
+  min-height: 26px;
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  padding: 4px 10px;
   transition: border-color 120ms ease, color 120ms ease;
 }
 

@@ -13,7 +13,7 @@ import { transition } from "@/core/prison-engine/state-machine";
 import { resolveTaskProfile } from "@/core/task-types/registry";
 import { generateJailbreakPrompt } from "@/core/jailbreak-engine";
 import { combineJailbreakPrompt } from "@/core/jailbreak-engine/local";
-import { generateRefinedPrompt } from "@/core/prompt-refiner";
+import { combineDirectedPrompt, generateRefinedPrompt } from "@/core/prompt-refiner";
 import type { LLMProvider } from "@/services/ai/types";
 import type { CouncilDeps } from "@/services/ai/council-config";
 import type { CouncilEvent, CouncilReview } from "@/models/council";
@@ -199,9 +199,7 @@ async function generateCandidate(prison: ResolvedPrison, provider: LLMProvider |
     generation: { source: "compiler", provider: null, model: null, strategies: [] },
   };
   const result = await generateRefinedPrompt({ provider, prison, compiled: base, feedback });
-  const text = prison.language === "tr"
-    ? `# Göreve Özel Yönlendirme\n\n${result.prompt}\n\n# Bağlayıcı Görev Sözleşmesi\n\n${base.text}`
-    : `# Task-Specific Direction\n\n${result.prompt}\n\n# Authoritative Task Contract\n\n${base.text}`;
+  const text = combineDirectedPrompt(result.prompt, base.text, prison.language);
   return {
     compiled: { ...base, text },
     generation: { source: "ai", provider: provider.info.provider, model: provider.info.model, strategies: result.strategies },
@@ -217,6 +215,8 @@ export async function runCompilePipeline(
   request: CompileRequest,
   deps: PipelineDeps,
 ): Promise<ResolvedPrison> {
+  // The fast path: one AI API writes the prompt directly; the council runs only when the user chose a table.
+  if (prison.compileOptions.councilMode === "single") deps = { ...deps, council: null };
   const now = deps.now ?? (() => new Date());
   const compiledStatus = prison.status === "READY_FOR_COMPILE" ? "PROMPT_COMPILED" : "PROMPT_RECOMPILED";
   let working = prison;

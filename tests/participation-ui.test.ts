@@ -79,7 +79,8 @@ describe("owner participation and truthful handoff", () => {
     expect(html).toContain("tamamını tek mesaj olarak yapıştır");
     expect(html).not.toContain("<script>");
     expect(html).not.toContain("Kopyalandı");
-    expect(html).not.toContain("href=");
+    expect(html).toContain('href="https://chatgpt.com/"');
+    expect(html).not.toContain("%3Cscript");
     expect(html).not.toContain("Geri bildirimin uygulandı");
   });
 

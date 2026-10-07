@@ -6,7 +6,11 @@ export const TECHNICALITY_LEVELS = ["standard", "technical"] as const;
 export const SCOPE_MODES = ["strict", "balanced", "open"] as const;
 export const ExecutionContextSchema = z.enum(["chat", "mobile", "browser", "agent"]);
 export type ExecutionContext = z.infer<typeof ExecutionContextSchema>;
-export const CouncilModeSchema = z.enum(["competition", "collaboration"]);
+/**
+ * How the prompt is produced. single = one AI API writes it directly (fast; the final text is still reviewed);
+ * competition / collaboration = the multi-model council (arena or team table), only when the user asks for it.
+ */
+export const CouncilModeSchema = z.enum(["single", "competition", "collaboration"]);
 export type CouncilMode = z.infer<typeof CouncilModeSchema>;
 
 const CompileOptionsObject = z.object({
@@ -16,7 +20,7 @@ const CompileOptionsObject = z.object({
   agentMode: z.boolean(),
   jailbreakMode: z.boolean().default(false),
   executionContext: ExecutionContextSchema.default("chat"),
-  councilMode: CouncilModeSchema.default("competition"),
+  councilMode: CouncilModeSchema.default("single"),
 });
 export const CompileOptionsSchema = z.preprocess((value) => {
   if (value && typeof value === "object" && !Array.isArray(value)) {
@@ -36,7 +40,7 @@ export const DEFAULT_COMPILE_OPTIONS: CompileOptions = {
   agentMode: false,
   jailbreakMode: false,
   executionContext: "chat",
-  councilMode: "competition",
+  councilMode: "single",
 };
 
 /** Toolbar actions under the generated prompt ("Daha Teknik", "Daha Kısa", ...). */

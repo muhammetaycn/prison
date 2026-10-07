@@ -63,10 +63,20 @@ describe("council evidence presentation", () => {
   });
   it("does not offer a pretend multi-model workflow while the council is off", () => {
     const html = renderToStaticMarkup(createElement(CouncilModePicker, { value: "competition", available: false, onChange: noop }));
-    expect(html).toContain("AI masası henüz yapılandırılmadı");
-    expect(html).not.toContain('role="radiogroup"');
+    // Only the fast single-model path is offered, with a pointer to where a council can be set up.
+    expect(html).toContain("Hızlı · tek model");
+    expect(html).toContain("AI ekibim · API ayarları");
     expect(html).not.toContain("Yarışma masası");
     expect(html).not.toContain("Ekip masası");
+  });
+
+  it("offers the fast path first and the tables as the detailed options when a council is configured", () => {
+    const html = renderToStaticMarkup(createElement(CouncilModePicker, { value: "single", available: true, onChange: noop }));
+    const fast = html.indexOf("Hızlı · tek model");
+    expect(fast).toBeGreaterThan(-1);
+    expect(html.indexOf("Yarışma masası")).toBeGreaterThan(fast);
+    expect(html.indexOf("Ekip masası")).toBeGreaterThan(fast);
+    expect(html).toContain("tek bir yapay zekâ API");
   });
 
   it("labels configured models as configuration rather than claiming every model is connected", () => {

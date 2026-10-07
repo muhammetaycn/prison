@@ -2,6 +2,7 @@
 
 import type { PrisonStatus } from "@/models/prison";
 import { cx } from "@/ui/lib/format";
+import { useI18n } from "@/ui/i18n";
 import styles from "./StatusPipeline.module.css";
 
 /** The prison lifecycle, collapsed into the stages a user cares about. */
@@ -21,17 +22,23 @@ interface StatusPipelineProps {
 }
 
 export function StatusPipeline({ status, activeStage = null }: StatusPipelineProps) {
+  const { locale, t } = useI18n();
+  const labels = [
+    t("Intent", "Intent", "意图"), t("Prison", "Task", "任务"),
+    t("Gereksinimler", "Requirements", "需求"), t("Derleme", "Generation", "生成"),
+    t("Kontrol", "Review", "检查"), t("Hazır", "Ready", "就绪"),
+  ];
   const reached = STAGES.findIndex((stage) => stage.statuses.includes(status));
   return (
-    <ol className={styles.root} aria-label="Prison durumu">
+    <ol className={styles.root} aria-label={t("Prison durumu", "Task status", "任务状态")}>
       {STAGES.map((stage, index) => {
         const working = activeStage !== null && index === activeStage;
         const done = activeStage !== null ? index < activeStage : index <= reached;
         return (
           <li key={stage.label} className={cx(styles.stage, done && styles.done, working && styles.working)}>
             <span className={styles.dot} aria-hidden />
-            <span className={styles.name} lang={stage.lang}>
-              {stage.label}
+            <span className={styles.name} lang={locale === "tr" ? stage.lang : undefined}>
+              {labels[index]}
             </span>
           </li>
         );

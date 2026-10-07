@@ -7,7 +7,7 @@ export const TARGET_OPTIONS: ReadonlyArray<SegmentedOption<TargetAI>> = TARGET_A
   label: TARGET_LABELS[value],
 }));
 
-const LANGUAGE_LABELS: Record<Language, string> = { en: "EN", tr: "TR" };
+const LANGUAGE_LABELS: Record<Language, string> = { en: "EN", tr: "TR", zh: "中文" };
 
 export const LANGUAGE_OPTIONS: ReadonlyArray<SegmentedOption<Language>> = LANGUAGES.map((value) => ({
   value,

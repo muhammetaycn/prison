@@ -13,6 +13,11 @@ interface HookHost {
 }
 
 const hookRuntime = vi.hoisted(() => ({ active: null as HookHost | null }));
+// This clock harness invokes the component directly; locale rendering is covered by real React SSR tests.
+vi.mock("@/ui/i18n", () => {
+  const t = (tr: string) => tr;
+  return { useI18n: () => ({ locale: "tr", t, setLocale: () => {} }) };
+});
 vi.mock("react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("react")>();
   const host = () => {

@@ -21,6 +21,8 @@ const META_EN =
   /\b(?:please\s+)?(?:write|generate|create|make|give\s+me|produce|craft|build)\s+(?:me\s+)?(?:a|an|the)?\s*(?:[\p{L}-]+\s+){0,2}?prompt(?!\s+(?:generator|builder|engine|library|templates?|system|manager|editor|collection|tool)\b)\s*(?:for|to|that|which|so\s+that)?\s*/giu;
 const LEADING_PROMPT_WRAPPER = /^(?:a\s+|an\s+|the\s+)?prompt\s+(?:for|to|that|which)\s+/giu;
 const TRAILING_PROMPT_WRAPPER = /\s+(?:prompt|promptu|promptunu)\s*$/giu;
+const LEADING_ZH_PROMPT_WRAPPER = /^(?:请|麻烦)?(?:帮我|为我|给我)?(?:(?:为|给)\s*(?:codex|claude|chat\s?gpt|gpt|gemini)\s*)?(?:写|编写|生成|制作|创建)(?:一个|一段|一份)?(?:详细的|专业的|完整的|清晰的)?(?:提示词|prompt)(?!生成器|编辑器|管理器|系统|工具|库|模板)(?:\s*[，,:：]\s*)?(?:用于|用来|来|以便)?\s*/iu;
+const TRAILING_ZH_PROMPT_WRAPPER = /^(?:请|麻烦)?(?:帮我)?为(.+?)(?:编写|生成|写|创建)(?:一个|一段|一份)?(?:详细的|专业的|完整的)?(?:提示词|prompt)[。.!]?$/iu;
 
 const PROTECTION_PHRASE = /(?:\S+\s+)?\S+\s+(?:bozmadan|değiştirmeden|dokunmadan|bozulmadan)\s*/giu;
 const PROTECTION_PHRASE_EN = /\s*,?\s*without (?:breaking|changing|touching) [^,.;]+/giu;
@@ -75,8 +77,10 @@ function imperativizeClause(clause: string): string {
 }
 
 function stripWrapper(raw: string): string {
+  const trailingZh = raw.trim().match(TRAILING_ZH_PROMPT_WRAPPER);
+  const source = trailingZh?.[1] ?? raw.replace(LEADING_ZH_PROMPT_WRAPPER, "");
   return cleanText(
-    raw
+    source
       .replace(TARGET_MENTION, " ")
       .replace(META_TR, " ")
       .replace(META_EN, " ")
@@ -103,6 +107,8 @@ export function splitClauses(text: string): string[] {
   parts.push(rest);
   return parts
     .flatMap((part) => part.split(/\s*(?:;|,\s+and\s+)\s*/i))
+    // Chinese clauses do not need spaces. Western punctuation in paths, versions and code remains intact.
+    .flatMap((part) => /\p{Script=Han}/u.test(part) ? part.split(/[，。；！？]/u) : [part])
     .map((part) => cleanText(part))
     .filter(Boolean);
 }
@@ -118,16 +124,21 @@ export function extractGoal(raw: string): ExtractedGoal {
   const goalText = imperativizeClause(
     stripped.replace(/(\p{L}+(?:ecek|acak))(?=\s+ve\s)/gu, (word) => toImperative(word)),
   );
-  const goal = ensureSentence(capitalizeFirst(goalText));
+  const capitalized = capitalizeFirst(goalText);
+  const goal = /[。！？]$/u.test(capitalized) ? capitalized : ensureSentence(capitalized);
   const requirementClauses = clauses
     .map((clause) =>
       cleanText(clause.replace(PROTECTION_PHRASE, " ").replace(PROTECTION_PHRASE_EN, " ")),
     )
-    .filter((clause) => clause.split(" ").length >= 2)
+    .filter((clause) => clause.split(" ").length >= 2 || /\p{Script=Han}.*\p{Script=Han}/u.test(clause))
     .map((clause) => capitalizeFirst(clause));
   return { goal, clauses: requirementClauses };
 }
 
 export function titleFromGoal(goal: string): string {
+  if (/\p{Script=Han}/u.test(goal) && !/\s/u.test(goal)) {
+    const title = goal.replace(/[。！？.!?]$/u, "");
+    return [...title].length > 32 ? `${[...title].slice(0, 32).join("")}…` : title;
+  }
   return truncateWords(goal.replace(/[.!?]$/, ""), 5);
 }

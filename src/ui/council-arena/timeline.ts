@@ -154,11 +154,52 @@ const KIND_LABELS: Record<CouncilEvent["kind"], [string, string]> = {
   abstained: ["Katkı veremedi", "Oy veremedi"],
 };
 
-export function kindLabel(kind: CouncilEvent["kind"], mode: CouncilMode): string {
-  return KIND_LABELS[kind][mode === "collaboration" ? 0 : 1];
+const KIND_LABELS_EN: Record<CouncilEvent["kind"], [string, string]> = {
+  seat: ["Joined the table", "Entered the arena"],
+  replace: ["Reserve model joined", "Reserve contender joined"],
+  memory: ["Memory", "Memory"], thinking: ["Thinking", "Preparing"],
+  research: ["Research", "Exploration"], proposal: ["First proposal", "Opening move"],
+  critique: ["Discussion", "Attack · critique"], weapon: ["Equipment", "Equipment earned"],
+  eliminated: ["Left the table", "Eliminated"], revision: ["New proposal", "Revised"],
+  draft: ["Shared draft", "Shared draft"], approval: ["Approval", "Approval"],
+  objection: ["Objection", "Objection"], winner: ["Consensus", "Winner"],
+  finalist: ["Selected for final review", "Selected for final review"],
+  failed: ["No response received", "No response received"], abstained: ["Could not contribute", "Could not vote"],
+};
+
+const KIND_LABELS_ZH: Record<CouncilEvent["kind"], [string, string]> = {
+  seat: ["加入讨论桌", "进入竞技场"], replace: ["替补模型加入", "替补选手加入"],
+  memory: ["记忆", "记忆"], thinking: ["思考中", "准备中"],
+  research: ["研究", "探索"], proposal: ["初次提案", "首次行动"],
+  critique: ["讨论", "进攻 · 评审"], weapon: ["装备", "获得装备"],
+  eliminated: ["离开讨论桌", "淘汰"], revision: ["新提案", "改进"],
+  draft: ["共同草稿", "共同草稿"], approval: ["认可", "认可"],
+  objection: ["异议", "异议"], winner: ["达成共识", "胜出者"],
+  finalist: ["选入最终审查", "选入最终审查"],
+  failed: ["未收到响应", "未收到响应"], abstained: ["未能参与", "未能投票"],
+};
+
+type ArenaLocale = "tr" | "en" | "zh";
+
+export function kindLabel(kind: CouncilEvent["kind"], mode: CouncilMode, locale: ArenaLocale = "tr"): string {
+  const labels = locale === "zh" ? KIND_LABELS_ZH : locale === "en" ? KIND_LABELS_EN : KIND_LABELS;
+  return labels[kind][mode === "competition" ? 1 : 0];
 }
 
-export function weaponName(dimension: CouncilDimension): string {
+const EQUIPMENT_EN: Record<CouncilDimension, string> = {
+  intent_alignment: "Sword · goal alignment", context_completeness: "Bow · complete context",
+  constraint_clarity: "Shield · clear constraints", execution_clarity: "Hammer · clear execution",
+  output_clarity: "Spear · clear output", target_ai_compatibility: "Staff · target AI compatibility",
+};
+const EQUIPMENT_ZH: Record<CouncilDimension, string> = {
+  intent_alignment: "剑 · 目标一致性", context_completeness: "弓 · 上下文完整性",
+  constraint_clarity: "盾 · 约束清晰度", execution_clarity: "锤 · 执行清晰度",
+  output_clarity: "矛 · 输出清晰度", target_ai_compatibility: "杖 · 目标 AI 适配性",
+};
+
+export function weaponName(dimension: CouncilDimension, locale: ArenaLocale = "tr"): string {
+  if (locale === "en") return EQUIPMENT_EN[dimension];
+  if (locale === "zh") return EQUIPMENT_ZH[dimension];
   return `${COUNCIL_WEAPONS[dimension].name} · ${COUNCIL_WEAPONS[dimension].meaning}`;
 }
 

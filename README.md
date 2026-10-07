@@ -396,7 +396,7 @@ for the visual scene, and it loads in the browser only when the scene is opened.
 ### Your AI team and taking part
 
 From **My AI team · API settings** (*AI ekibim · API ayarları*) in the side menu you can add and remove connections and choose the analysis model
-and 3–6 different models to prepare the prompt. NVIDIA, DeepSeek, OpenAI, Anthropic and OpenAI-compatible Chat
+for quick single-model generation, plus an optional team of 3–6 different models for detailed table/arena work. NVIDIA, DeepSeek, OpenAI, Anthropic and OpenAI-compatible Chat
 Completions APIs over HTTPS are supported. Model IDs and specialties are set by the user; provider access is tested
 before real generation. Saving makes no remote API call. No stand-in model the user did not choose is added to the
 saved team; operations already started finish with their own connections.
@@ -407,10 +407,10 @@ are never sent back to the browser or written to browser storage. An empty key k
 settings are used; **Back to the starting team** (*Başlangıç ekibine dön*) removes the saved settings and returns to the environment settings.
 Setting changes apply to new generations.
 
-In the **Join the stage** (*Sahneye katıl*) section, 50 separate joint gestures can be sent to a character by choosing one or with a
-short gesture command. The command pauses viewing and brings the stage into view; it does not change the generation
-running in the background, the jury scores or the event record. Seated characters and wings carrying items are
-respected. Automatic gestures vary by character and by the real event; the same clip is not chosen twice in a row.
+The system selects 50 different joint gestures automatically from the actual work events; viewers do not choose
+animations. Seated characters and wings carrying items are respected. Gestures vary by character and by the real
+event; the same clip is not chosen twice in a row. Replay controls do not change the background API operation,
+jury scores or event record.
 Weapons are carried at wing/back attachment points; an open equipment guide shows the real jury criterion behind each
 one and its current holder.
 
@@ -418,6 +418,12 @@ Goal/limit/output hints are added to the user's visible request. Closable **How 
 guidance suited to each stage. In the finished version the full prompt can be copied or downloaded as `.txt`; sending
 it to another AI is up to the user. Feedback on the result goes into the real revision flow; no success message is
 shown before it completes. A failed discussion record is never presented as a finished prompt.
+
+The result includes a task-specific starter route to Codex, Claude Code, ChatGPT, Claude, Gemini or Kimi, with
+official setup links, preparation steps and output checks. Visual 3D modeling routes include Blender installation
+and scripting instructions; software viewers and language/data models keep their own routes. The guide uses the
+displayed prompt version's task snapshot and leaves the copied prompt unchanged. Switching the interface between
+Turkish, English and Simplified Chinese preserves requests and stored prompts; prompt language is chosen separately.
 
 The purpose of this structure and the rules for extending it: [product system](docs/product-system.en.md).
 

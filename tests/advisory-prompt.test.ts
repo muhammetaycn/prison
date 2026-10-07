@@ -7,7 +7,7 @@ import { compilePrompt } from "@/core/prompt-compiler";
 import { mergeFixes, runRules } from "@/core/prompt-critic";
 import { resolveRequirements } from "@/core/requirement-resolver";
 import { resolveTaskProfile } from "@/core/task-types/registry";
-import type { ConcreteTarget, Language } from "@/models/common";
+import type { ConcreteTarget } from "@/models/common";
 import type { IntentAnalysis } from "@/models/intent";
 import { DEFAULT_COMPILE_OPTIONS, type CompileOptions } from "@/models/options";
 import { paymentIntent } from "./helpers";
@@ -15,6 +15,8 @@ import { paymentIntent } from "./helpers";
 const TARGETS = ["gpt", "claude", "gemini", "codex"] as const;
 const CONTEXTS = ["chat", "mobile", "browser", "agent"] as const;
 const VERBOSITIES = ["concise", "standard", "detailed"] as const;
+/** This suite carries its fixture text in English and Turkish. */
+type Language = keyof typeof CONTENT;
 
 const CONTENT = {
   en: {

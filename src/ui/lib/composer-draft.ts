@@ -13,7 +13,7 @@ const ComposerDraftSchema = z.object({
   language: LanguageSchema,
   mode: z.enum(PROMPT_MODES),
   executionContext: ExecutionContextSchema.default("chat"),
-  councilMode: CouncilModeSchema.default("competition"),
+  councilMode: CouncilModeSchema.default("single"),
 }).strict();
 export type ComposerDraft = z.infer<typeof ComposerDraftSchema>;
 
@@ -23,7 +23,7 @@ export const DEFAULT_COMPOSER_DRAFT: Readonly<ComposerDraft> = {
   language: "tr",
   mode: "auto",
   executionContext: "chat",
-  councilMode: "competition",
+  councilMode: "single",
 };
 
 export interface ComposerInput {

@@ -9,7 +9,7 @@ import { transition } from "@/core/prison-engine/state-machine";
 import { interpretRevision } from "@/core/revision-engine";
 import { refreshExecutionPlan } from "@/core/intent-engine/planning";
 import { toTaskPlan } from "@/core/requirement-resolver";
-import { MODIFIER_LABELS, TARGET_LABELS } from "@/templates/ui-labels";
+import { MODIFIER_LABELS, OPTION_VALUE_LABELS, TARGET_LABELS } from "@/templates/ui-labels";
 import { runCompilePipeline, type PipelineDeps } from "./compile";
 import { CouncilCheckpointWorkingPrisonSchema, councilSourceFingerprint, revisionRequestFingerprint, type CouncilCheckpoint, type CouncilCheckpointRevisionOrigin } from "@/models/council-checkpoint";
 
@@ -61,9 +61,11 @@ async function alignTargetPlan(prison: ResolvedPrison, deps: PipelineDeps): Prom
   return { ...prison, spec: { ...prison.spec, taskPlan: {
     ...prison.spec.taskPlan,
     recommendedTarget: prison.targetAI,
-    targetRationale: prison.language === "tr"
-      ? `Kullanıcı ${target} hedefini seçti; görev, çıktı ve koruma koşulları bu hedefe göre korunur.`
-      : `The owner selected ${target}; preserve the task, deliverable and protected constraints for this target.`,
+    targetRationale: {
+      en: `The owner selected ${target}; preserve the task, deliverable and protected constraints for this target.`,
+      tr: `Kullanıcı ${target} hedefini seçti; görev, çıktı ve koruma koşulları bu hedefe göre korunur.`,
+      zh: `用户选择了 ${target}；针对该目标保留任务、交付物和受保护的限制。`,
+    }[prison.language],
   } } };
 }
 
@@ -79,6 +81,8 @@ export async function runRevisionPipeline(
   deps: PipelineDeps,
   clarifications?: ClarificationAnswer[],
 ): Promise<ResolvedPrison> {
+  // A single-model prison has no council checkpoints to resume.
+  if (prison.compileOptions.councilMode === "single") deps = { ...deps, council: null };
   const now = deps.now ?? (() => new Date());
   if (deps.checkpoints && deps.council) {
     const checkpoint = await deps.checkpoints.get(prison.id);
@@ -145,7 +149,7 @@ export async function runAdjustmentPipeline(
     adjustment.kind === "modifier" ? MODIFIER_LABELS[adjustment.action]
       : adjustment.kind === "target" ? `Hedef AI: ${TARGET_LABELS[adjustment.target]}`
         : adjustment.kind === "context" ? `Kullanım ortamı: ${adjustment.executionContext}`
-          : `Konsey yöntemi: ${adjustment.councilMode}`;
+          : `Çalışma biçimi: ${OPTION_VALUE_LABELS.councilMode[adjustment.councilMode]}`;
 
   let working: ResolvedPrison =
     adjustment.kind === "modifier"

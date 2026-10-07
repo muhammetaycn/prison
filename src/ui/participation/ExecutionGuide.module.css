@@ -1,0 +1,22 @@
+.root { min-width: 0; margin-top: 15px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-sunken); font-size: 12px; line-height: 1.65; color: var(--text-dim); }
+.root summary { cursor: pointer; color: var(--text); }
+.root summary span { display: block; color: var(--text-faint); font-size: 10px; }
+.root summary strong { font-size: 13px; font-weight: 500; }
+.reason { margin: 10px 0 13px; }
+.destination { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 15px; }
+.destination label { display: flex; flex-direction: column; flex: 1 1 210px; gap: 5px; color: var(--text); }
+.destination select { width: 100%; min-width: 0; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--panel); color: var(--text); font-size: 12px; }
+.destination > span { flex: 2 1 240px; font-size: 11px; color: var(--text-faint); }
+.prepare { margin: 14px 0 10px; }
+.prepare strong, .verify > strong, .contract > strong { display: block; color: var(--text); font-weight: 500; margin-bottom: 4px; }
+.links { display: flex; flex-wrap: wrap; gap: 7px; }
+.links a { max-width: 100%; white-space: normal; text-decoration: none; font-size: 11px; overflow-wrap: anywhere; }
+.links a span { margin-left: 7px; }
+.steps { display: grid; gap: 8px; margin: 15px 0; padding-left: 22px; }
+.steps li { padding-left: 4px; overflow-wrap: anywhere; }
+.steps li::marker { color: var(--text-faint); font-family: var(--font-mono); }
+.verify { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); }
+.verify p { margin: 0; }
+.contract ul, .verify ul { margin: 6px 0 0; padding-left: 20px; overflow-wrap: anywhere; }
+.limitation { margin: 12px 0 0; font-size: 11px; color: var(--text-faint); }
+@media (max-width: 640px) { .root { padding: 11px; } .links { flex-direction: column; } .links a { justify-content: space-between; } }

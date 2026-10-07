@@ -81,19 +81,27 @@ export const BLOCK_BUILDERS: Record<BlockId, BlockBuilder> = {
     text: ctx.input.rawRequest.trim(),
     quote: true,
     ...(ctx.input.ownerDirectives?.length ? {
-      itemsLabel: ctx.language === "tr" ? "Kullanıcının son talimatları (kronolojik):" : "Latest owner instructions (chronological):",
+      itemsLabel: {
+        en: "Latest owner instructions (chronological):",
+        tr: "Kullanıcının son talimatları (kronolojik):",
+        zh: "用户的最新指示（按时间顺序）：",
+      }[ctx.language],
       items: ctx.input.ownerDirectives,
-      notes: [ctx.language === "tr"
-        ? "Bu talimatlardaki açık sayılar, sınırlar ve yanıtlar çıkarımlardan önceliklidir. Sonraki talimat önceki tercihi açıkça değiştirirse güncel tercihi uygula; çözülemeyen gerçek bir çelişkiyi netleştir."
-        : "Explicit numbers, limits and answers in these instructions take precedence over inferred summaries. A later explicit change supersedes the earlier preference; clarify any genuine unresolved conflict."],
+      notes: [{
+        en: "Explicit numbers, limits and answers in these instructions take precedence over inferred summaries. A later explicit change supersedes the earlier preference; clarify any genuine unresolved conflict.",
+        tr: "Bu talimatlardaki açık sayılar, sınırlar ve yanıtlar çıkarımlardan önceliklidir. Sonraki talimat önceki tercihi açıkça değiştirirse güncel tercihi uygula; çözülemeyen gerçek bir çelişkiyi netleştir.",
+        zh: "这些指示中明确的数字、限制和回答优先于推断出的摘要。后来的明确修改取代先前的偏好；对确实无法调和的冲突要加以澄清。",
+      }[ctx.language]],
     } : {}),
   }),
 
   TASK: (ctx) => {
     const plan = ctx.input.spec.taskPlan;
-    const steps = plan?.steps.map((step) => ctx.language === "tr"
-      ? `${step.action} Amaç: ${step.purpose} Kontrol: ${step.verification}`
-      : `${step.action} Purpose: ${step.purpose} Verify: ${step.verification}`) ?? [];
+    const steps = plan?.steps.map((step) => ({
+      en: `${step.action} Purpose: ${step.purpose} Verify: ${step.verification}`,
+      tr: `${step.action} Amaç: ${step.purpose} Kontrol: ${step.verification}`,
+      zh: `${step.action} 目的：${step.purpose} 验证：${step.verification}`,
+    })[ctx.language]) ?? [];
     const actions = dedupeTexts(steps.length ? steps : behaviorItems(ctx, ctx.input.spec.requiredActions, "defaultActions"));
     if (!actions.length) return null;
     return { id: "TASK", intro: p(ctx, "taskIntro"), ...(plan?.approach ? { text: plan.approach } : {}), items: actions, ordered: true };

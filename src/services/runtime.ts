@@ -15,6 +15,7 @@ interface Runtime {
   service: PrisonService;
   engine: EngineStatus;
   council: CouncilDeps | null;
+  councilConfigurationError: string | null;
   checkEngine: () => Promise<EngineHealthResult>;
   operations: OperationManager;
 }
@@ -63,12 +64,13 @@ export function getRuntime(): Runtime {
   const settingsKey = `${dir}:${saved?.revision ?? "environment"}`;
   if (!runtime || settingsKey !== runtimeSettingsKey) {
     // Existing jobs have already closed over the old service and credentialed clients.
-    const { engine, provider, council } = configuredProviders(saved);
+    const { engine, provider, council, councilConfigurationError } = configuredProviders(saved);
     const checkpointDir = saved ? path.join(dir, ".council-checkpoints", providerTopologyKey(saved)) : path.join(dir, ".council-checkpoints");
-    const service = new PrisonService(new FilePrisonRepository(dir), provider, undefined, council, getRuntimeOperationState(dir), new FileCouncilCheckpointRepository(checkpointDir));
+    const service = new PrisonService(new FilePrisonRepository(dir), provider, undefined, council, getRuntimeOperationState(dir), new FileCouncilCheckpointRepository(checkpointDir), councilConfigurationError);
     runtime = {
       engine,
       council,
+      councilConfigurationError,
       service,
       operations: new OperationManager(new FileOperationRepository(path.join(dir, ".operations")), service, getRuntimeJobState(dir)),
       checkEngine: createEngineConnectionCheck(engine, provider),
