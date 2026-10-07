@@ -1,5 +1,7 @@
 # PRISON ürün sistemi
 
+[English](product-system.en.md) · [简体中文](product-system.zh-CN.md) · **Türkçe**
+
 PRISON, kişinin bir isteğini seçtiği AI'da kullanabileceği net bir görev promptuna dönüştürür.
 Masa ve arena bu çalışmayı anlaşılır bir sahnede anlatır. Kullanıcının değeri, hedefinin ve
 sınırlarının korunmasından, önerileri kontrol edebilmesinden ve sonucu geliştirebilmesinden gelir.

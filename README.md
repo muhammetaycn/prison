@@ -1,7 +1,9 @@
 # PRISON
 
-**İsteğini anlat; PRISON onu kullanacağın yapay zekâya göre hazırlanmış, denetlenmiş bir prompta dönüştürsün.**
-<br><sub>Open-source prompt studio · [English summary](#in-english)</sub>
+**English** · [简体中文](README.zh-CN.md) · [Türkçe](README.tr.md)
+
+**Describe what you want; PRISON turns it into a verified prompt written for the AI you are going to use.**
+<br><sub>Open-source prompt studio</sub>
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)
 ![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
@@ -9,541 +11,506 @@
 ![three.js](https://img.shields.io/badge/three.js-r186-000000?logo=threedotjs)
 ![Zod](https://img.shields.io/badge/Zod-4-3E67B1?logo=zod&logoColor=white)
 ![Vitest](https://img.shields.io/badge/test-Vitest-6E9F18?logo=vitest&logoColor=white)
-![Dil](https://img.shields.io/badge/prompt%20dili-TR%20%7C%20EN-c0392b)
+![Prompt language](https://img.shields.io/badge/prompts-EN%20%7C%20TR-c0392b)
 
-Doğal dilde yazılan bir isteği anlayan, onu izole bir **Prison Instance** içine alan,
-yapılandırılmış göreve dönüştüren ve hedef yapay zekâ (GPT, Claude, Gemini, Codex) için
-optimize edilmiş prompt derleyen uygulama.
+An application that understands a request written in natural language, isolates it in its own **Prison
+Instance**, turns it into a structured task and compiles a prompt optimized for the target AI (GPT, Claude,
+Gemini, Codex).
 
-![Kapışma arenası: kazanan kürsüde, kafesin çevresinde tribün](docs/images/arena.jpg)
+![The competition arena: the winner on the podium, the stands around the cage](docs/images/arena.jpg)
 
-Modeller isteğin üzerinde gerçekten çalışırken sahnede izlenir. Her model kendi Pırpır'ıyla temsil edilir.
-Kapışma arenasında öneriler yarışır, jüri puanları silahlara dönüşür, en güçlü prompt kazanır.
-Ekip masasında ise modeller tek bir ortak metinde uzlaşır. Sahnede görülen her an kayıttaki gerçek bir olaydan gelir.
+You watch the models on stage while they really work on your request. Each model is played by its own Pırpır.
+In the competition arena the candidates fight, the jury's scores become weapons and the strongest prompt wins.
+At the team table the models converge on one shared text. Every moment on stage comes from a real recorded event.
 
-## İçindekiler
+## Contents
 
-- [Ne işe yarar?](#ne-işe-yarar)
-- [Nasıl kullanılır?](#nasıl-kullanılır)
-- [Promptu nerede kullanırım?](#promptu-nerede-kullanırım)
-- [Nasıl çalışır?](#nasıl-çalışır)
-- [Görüntüler](#görüntüler)
-- [Sık sorulan sorular](#sık-sorulan-sorular)
-- [In English](#in-english)
-- [Çalıştırma](#çalıştırma) · [Çok modelli AI masası](#çok-modelli-ai-masası) · [Mimari](#mimari) · [API](#api)
+- [What it does](#what-it-does)
+- [How to use it](#how-to-use-it)
+- [Where to use the prompt](#where-to-use-the-prompt)
+- [How it works](#how-it-works)
+- [Screenshots](#screenshots)
+- [FAQ](#faq)
+- [Running](#running) · [Multi-model AI council](#multi-model-ai-council) · [Architecture](#architecture) · [API](#api)
 
-## Ne işe yarar?
+## What it does
 
-- **Ne istediğini netleştirir.** İsteğindeki asıl amacı, değişmemesi gereken sınırları, çıktının biçimini ve
-  eksik bilgileri ayırır; bilinmeyenleri uydurmaz, sana sorar.
-- **Kullanacağın yapay zekâya göre yazar.** Prompt ChatGPT, Claude, Gemini ya da Codex için; sohbet, telefon,
-  tarayıcı ya da araç kullanan agent ortamına göre ayrı ayrı hazırlanır.
-- **Birden çok model birlikte çalışır.** İstersen 3–6 farklı model ayrı ayrı taslak yazar, birbirini eleştirir,
-  kör karşılaştırılır; son metin anlamsal denetimden geçmeden hazır sayılmaz.
-- **Çalışmayı izletir.** Arena ya da ekip masası, modellerin ne önerdiğini, neyi neden değiştirdiğini ve kimin
-  kazandığını gösterir.
-- **Kontrol sende.** Görevi kendi cümlelerinle düzeltebilir, soruları yanıtlayabilir, sınırları kilitleyebilir,
-  eski sürümlere dönebilir ve kendi API bağlantılarını ve modellerini seçebilirsin.
+- **Clarifies what you want.** It separates the real goal of your request, the limits that must not change, the
+  output format and the missing information; it does not invent unknowns, it asks you.
+- **Writes for the AI you will use.** The prompt is prepared for ChatGPT, Claude, Gemini or Codex, and for a chat,
+  phone, browser or tool-using agent setting.
+- **Several models work together.** Optionally 3–6 different models draft independently, critique each other and
+  are compared blind; the final text is not ready until it passes a semantic check.
+- **Lets you watch the work.** The arena or the team table shows what the models proposed, what they changed and
+  why, and who won.
+- **You stay in control.** Correct the task in your own words, answer questions, lock limits, go back to earlier
+  versions and choose your own API connections and models.
 
-## Nasıl kullanılır?
+## How to use it
 
-1. **İsteğini yaz.** "Ne yaptırmak istiyorsun?" alanına derdini kendi cümlelerinle anlat.
-2. **Promptun nerede kullanılacağını seç:** Normal sohbet, Telefondaki AI, Tarayıcıdaki AI ya da Araç kullanan agent.
-   Prompt modu olarak "İsteğe göre", "Standart" ya da "JB modu"nu seçebilirsin.
-3. **Çalışma masasını seç:** Yarışma masasında modeller ayrı adaylarla yarışır; ekip masasında tek bir ortak metinde uzlaşır.
-4. **Planı ve soruları gözden geçir.** Eksik bilgi sorularını yanıtla; gerekirse görevi kendi cümlelerinle düzelt.
-5. **Masayı izle.** Öneriler, eleştiriler ve kararlar sahnede ve konuşma dökümünde görünür.
-6. **Promptu al ve kullan.** Hazır metni kopyala ve hedef yapay zekâya yapıştır. Sonuç istediğin gibi olmazsa geri
-   bildirim ver; PRISON yeni bir sürüm üretir.
+1. **Write your request.** Describe what you need in your own words in the "What do you want done?" (*Ne yaptırmak
+   istiyorsun?*) box. The interface is in Turkish; the original labels are given in italics.
+2. **Choose where the prompt will be used:** a normal chat (*Normal sohbet*), an AI on your phone (*Telefondaki AI*),
+   an AI in your browser (*Tarayıcıdaki AI*) or a tool-using agent (*Araç kullanan agent*). As the prompt mode, pick
+   "As requested" (*İsteğe göre*), "Standard" (*Standart*) or "JB mode" (*JB modu*).
+3. **Choose the work table:** at the competition table (*Yarışma masası*) the models compete with separate
+   candidates; at the team table (*Ekip masası*) they agree on one shared text.
+4. **Review the plan and the questions.** Answer the missing-information questions; correct the task in your own
+   words if needed.
+5. **Watch the table.** Proposals, critiques and decisions appear on stage and in the transcript.
+6. **Take the prompt and use it.** Copy the finished text and paste it into the target AI. If the result is not what
+   you wanted, give feedback; PRISON produces a new version.
 
-## Promptu nerede kullanırım?
+## Where to use the prompt
 
-| Seçtiğin kullanım yeri | Promptu yapıştıracağın yer | En uygun işler |
+| Usage setting you chose | Where to paste the prompt | Best for |
 | --- | --- | --- |
-| Normal sohbet | ChatGPT, Claude ya da Gemini'nin web veya masaüstü sohbeti | Metin, plan, analiz, öğrenme, tek seferlik işler |
-| Telefondaki AI | Aynı asistanların mobil uygulamaları | Kısa, adım adım ilerleyen yanıtlar |
-| Tarayıcıdaki AI | Tarayıcıda sayfaları okuyup işlem yapabilen asistanlar | Web'de araştırma, form ve sayfa işleri |
-| Araç kullanan agent | Codex gibi kod ve dosyalar üzerinde çalışan agent'lar | Proje içinde dosya düzenleme, komut çalıştırma, test |
+| Normal chat (*Normal sohbet*) | The web or desktop chat of ChatGPT, Claude or Gemini | Writing, plans, analysis, learning, one-off tasks |
+| AI on your phone (*Telefondaki AI*) | The mobile apps of the same assistants | Short, step-by-step answers |
+| AI in your browser (*Tarayıcıdaki AI*) | Assistants that can read pages and act in the browser | Web research, forms and page tasks |
+| Tool-using agent (*Araç kullanan agent*) | Agents that work on code and files, such as Codex | Editing files in a project, running commands, tests |
 
-Hedef yapay zekâyı "otomatik" bırakırsan PRISON işin türüne göre en uygununu önerir ve nedenini gösterir.
+If you leave the target AI on "auto", PRISON suggests the best fit for the kind of work and shows why.
 
-## Nasıl çalışır?
+## How it works
 
 ```mermaid
 flowchart LR
-  subgraph S1["1 · Görevi anlar"]
+  subgraph S1["1 · Understands the task"]
     direction TB
-    A[İsteğin] --> B[Niyet analizi]
-    B --> C["İzole prison<br/>amaç · sınırlar · eksikler"]
-    C --> D["Çözüm planı<br/>ve gereksinimler"]
+    A[Your request] --> B[Intent analysis]
+    B --> C["Isolated prison<br/>goal · limits · unknowns"]
+    C --> D["Solution plan<br/>and requirements"]
   end
-  subgraph S2["2 · Masada geliştirir"]
+  subgraph S2["2 · Improves it at the table"]
     direction TB
-    E[Hedef AI sözleşmesi] --> F[Bağımsız taslaklar]
-    F --> G["Karşılıklı eleştiri<br/>ve ikinci tur"]
-    G --> H[Kör karşılaştırma]
+    E[Target-AI contract] --> F[Independent drafts]
+    F --> G["Cross-critique<br/>and a second round"]
+    G --> H[Blind comparison]
   end
-  subgraph S3["3 · Teslim eder"]
+  subgraph S3["3 · Delivers"]
     direction TB
-    I["Anlamsal denetim<br/>gerekirse bir düzeltme"] --> J[Doğrulanmış prompt]
+    I["Semantic check<br/>one correction if needed"] --> J[Verified prompt]
     J --> K["ChatGPT · Claude<br/>Gemini · Codex"]
   end
   S1 --> S2 --> S3
 ```
 
-## Görüntüler
+## Screenshots
 
-| Saldırı anı | Ekip masası |
+| A strike | The team table |
 | --- | --- |
-| ![Eleştiri bir saldırı olarak canlandırılır; puan ne kadar düşükse vuruş o kadar serttir](docs/images/duel.jpg) | ![Karanlık odada ortak metin üzerinde uzlaşma](docs/images/table.jpg) |
+| ![A critique is played as a strike; the lower the score, the harder the blow](docs/images/duel.jpg) | ![Agreeing on the shared text in the dark room](docs/images/table.jpg) |
 
-| Başlangıç | Telefonda |
+| Start screen | On a phone |
 | --- | --- |
-| ![İsteğin yazıldığı ana ekran: prompt modu, kullanım yeri ve çalışma masası seçimi](docs/images/home.jpg) | ![Arena telefonda](docs/images/mobile.jpg) |
+| ![The start screen: prompt mode, usage setting and work table](docs/images/home.jpg) | ![The arena on a phone](docs/images/mobile.jpg) |
 
-## Sık sorulan sorular
+## FAQ
 
-**PRISON işi benim yerime yapar mı?**
-Hayır. PRISON işi yapacak yapay zekâ için en iyi promptu hazırlar. Promptu kendi kullandığın yapay zekâda
-çalıştırırsın. PRISON, hedef yapay zekânın işi tamamladığını iddia etmez.
+**Does PRISON do the work for me?**
+No. PRISON prepares the best prompt for the AI that will do the work. You run the prompt in your own AI. PRISON
+never claims that the target AI has completed the task.
 
-**API anahtarı olmadan çalışır mı?**
-Evet. Anahtar yoksa yerel, kural tabanlı motor bütün akışı (analiz, derleme, revizyon, sürümler) çalıştırır ve
-arayüzde bunu açıkça belirtir. Daha derin anlamsal analiz ve çok modelli masa için bir sağlayıcı anahtarı gerekir.
+**Does it work without an API key?**
+Yes. Without a key, the local rule-based engine runs the whole flow (analysis, compiling, revision, versions) and
+the interface says so clearly. Deeper semantic analysis and the multi-model council need a provider key.
 
-**Hangi sağlayıcı ve modelleri kullanabilirim?**
-NVIDIA, DeepSeek, Anthropic, OpenAI ve HTTPS üzerinden OpenAI uyumlu Chat Completions API'leri.
-Kendi bağlantılarını ekleyip çıkarabilir, masaya 3–6 farklı model seçebilirsin.
+**Which providers and models can I use?**
+NVIDIA, DeepSeek, Anthropic, OpenAI and OpenAI-compatible Chat Completions APIs over HTTPS. You can add and remove
+your own connections and pick 3–6 different models for the council.
 
-**Anahtarlarım ve kayıtlarım nerede tutulur?**
-Anahtarlar yalnızca sunucu tarafında kullanılır, tarayıcıya gönderilmez. Her görev (prison) kendi JSON dosyasında,
-varsayılan olarak `data/prisons` klasöründe saklanır.
+**Where are my keys and records kept?**
+Keys are used only on the server and are never sent to the browser. Each task (prison) is stored in its own JSON
+file, in the `data/prisons` folder by default.
 
-**Arenada gördüklerim gerçek mi?**
-Evet. Sahnedeki her an (öneri, eleştiri, silah, eleme, kazanan) kayıttaki gerçek bir olaydan gelir. Puan ya da
-içerik uydurulmaz. Hareket azaltma tercihi açıksa sahne sadeleşir.
+**Is what I see in the arena real?**
+Yes. Every moment on stage (proposal, critique, weapon, elimination, winner) comes from a real recorded event. No
+score or content is made up. With reduced motion turned on, the stage is simplified.
 
-**JB modu nedir?**
-Promptu göreve özel uzman çerçevesiyle yeniden yazan bir moddur. Yeni yetki vermez, hedef sistemin kurallarını
-aşmayı vaat etmez; görevin amacı, sınırları ve kalıcı talimatları korunur.
+**What is JB mode?**
+A mode that rewrites the prompt with an expert framing specific to the task. It grants no new permissions and
+does not promise to get around a target system's rules; the task's goal, limits and standing instructions are
+kept.
 
-## In English
-
-**PRISON is an open-source prompt studio.** You describe what you want in plain language; PRISON isolates the
-request in its own structured task (a "prison"), works out the goal, constraints, missing context and output
-format, and compiles a verified, ready-to-use prompt for the AI you will paste it into: ChatGPT/GPT, Claude,
-Gemini, Codex or a tool-using agent, in a phone, browser or chat setting.
-
-- **Request → structured task → prompt.** An intent engine reads the request, a requirement resolver turns it into a
-  task spec, and a prompt compiler builds the prompt block by block for the chosen target AI.
-- **A council of models.** Optionally, 3–6 different LLMs draft candidate prompts independently, critique each
-  other, revise, and are judged blind; the final text passes a semantic check before it is offered.
-- **Watch the work.** The council runs as a 3D scene: a competition arena, where the jury's scores become weapons
-  and the strongest prompt wins, or a team table, where the models converge on one shared text. Every moment on
-  stage comes from a real recorded event.
-- **You stay in control.** Revise the task in plain language, answer clarifying questions, pin constraints that must
-  never change, switch the target AI, restore earlier versions, and choose your own API connections and models.
-- **Providers:** NVIDIA, DeepSeek, Anthropic and OpenAI (keys stay on the server); a local engine works without any
-  key. Prompts can be produced in Turkish or English; the interface is in Turkish.
-- **Stack:** Next.js 16, React 19, TypeScript, Zod, three.js, Vitest.
-
-```bash
-npm install
-cp .env.example .env.local   # optional: add one provider key
-npm run dev                  # http://localhost:3100
-```
-
-## Çalıştırma
+## Running
 
 ```bash
 npm install
 npm run dev        # http://localhost:3100
 ```
 
-AI sağlayıcısı: `.env.example` dosyasını `.env.local` olarak kopyala ve bir anahtar gir.
-Anahtarlar yalnızca sunucuda kullanılır; `NEXT_PUBLIC_` öneki ekleme ve `.env.local` dosyasını paylaşma.
-Ortam ayarlarını değiştirdiğinde geliştirme sunucusunu yeniden başlat.
+AI provider: copy `.env.example` to `.env.local` and enter one key. Keys are used only on the server; do not add a
+`NEXT_PUBLIC_` prefix and do not share `.env.local`. Restart the development server after changing the
+environment.
 
-| Değişken | Açıklama |
+| Variable | Description |
 | --- | --- |
-| `NVIDIA_API_KEY` | NVIDIA motoru (varsayılan model `nvidia/nemotron-3.5-lightning-30b-a3b`) |
-| `DEEPSEEK_API_KEY` | Resmî DeepSeek motoru (varsayılan model `deepseek-flash`) |
-| `ANTHROPIC_API_KEY` | Claude motoru (varsayılan model `claude-opus-5-5`) |
-| `OPENAI_API_KEY` | OpenAI motoru (varsayılan model `gpt-5.5`) |
-| `PRISON_PROVIDER` | `nvidia` \| `deepseek` \| `anthropic` \| `openai` \| `local` — seçimi zorlar |
-| `PRISON_MODEL` | Model adını değiştirir |
-| `NVIDIA_BASE_URL` | NVIDIA API adresi (varsayılan `https://integrate.api.nvidia.com/v1`) |
-| `DEEPSEEK_BASE_URL` | DeepSeek API adresi (varsayılan `https://api.deepseek.com/v1`) |
-| `PRISON_DATA_DIR` | Prison kayıtlarının klasörü (varsayılan `data/prisons`) |
-| `PRISON_COUNCIL_MODE` | `enabled` çok modelli masayı açar; varsayılan `off` |
-| `PRISON_COUNCIL_MODELS` | Virgülle ayrılmış 3–6 farklı NVIDIA API model kimliği |
-| `PRISON_COUNCIL_RESERVE_MODELS` | En fazla 6 yedek model; ön kontrolde düşen üyenin yerine geçer. `none` ön kontrolü kapatır |
-| `PRISON_COUNCIL_DEPTH` | `deep` (varsayılan): inceleme turu, en az 3 dövüş turu, masada öğrenme ve en az 2 onay turu. `quick`: kısa akış, kapışmada 1–2 tur |
+| `NVIDIA_API_KEY` | NVIDIA engine (default model `nvidia/nemotron-3.5-lightning-30b-a3b`) |
+| `DEEPSEEK_API_KEY` | Official DeepSeek engine (default model `deepseek-flash`) |
+| `ANTHROPIC_API_KEY` | Claude engine (default model `claude-opus-5-5`) |
+| `OPENAI_API_KEY` | OpenAI engine (default model `gpt-5.5`) |
+| `PRISON_PROVIDER` | `nvidia` \| `deepseek` \| `anthropic` \| `openai` \| `local` — forces the choice |
+| `PRISON_MODEL` | Overrides the model name |
+| `NVIDIA_BASE_URL` | NVIDIA API address (default `https://integrate.api.nvidia.com/v1`) |
+| `DEEPSEEK_BASE_URL` | DeepSeek API address (default `https://api.deepseek.com/v1`) |
+| `PRISON_DATA_DIR` | Folder for prison records (default `data/prisons`) |
+| `PRISON_COUNCIL_MODE` | `enabled` turns the multi-model council on; default `off` |
+| `PRISON_COUNCIL_MODELS` | 3–6 different NVIDIA API model IDs, comma-separated |
+| `PRISON_COUNCIL_RESERVE_MODELS` | Up to 6 stand-in models that replace a member failing the pre-check. `none` turns the pre-check off |
+| `PRISON_COUNCIL_DEPTH` | `deep` (default): an investigation round, at least 3 battle rounds, learning at the table and at least 2 approval rounds. `quick`: a short flow, 1–2 rounds in the competition |
 
-Otomatik seçim önceliği **NVIDIA → DeepSeek → Anthropic → OpenAI** şeklindedir.
-Zorlanan sağlayıcının anahtarı eksikse veya sağlayıcı adı geçersizse anlaşılır bir yapılandırma hatası gösterilir.
-Önceki sürümde `DEEPSEEK_API_KEY`/`PRISON_PROVIDER=deepseek` ile kullanılan NVIDIA model ayarları desteklenir;
-yeni kurulumlarda `NVIDIA_API_KEY` ve `PRISON_PROVIDER=nvidia` kullan.
+Automatic selection priority is **NVIDIA → DeepSeek → Anthropic → OpenAI**. If the forced provider's key is missing
+or the provider name is invalid, a clear configuration error is shown. NVIDIA model settings used with
+`DEEPSEEK_API_KEY`/`PRISON_PROVIDER=deepseek` in the previous version are still supported; new installs should use
+`NVIDIA_API_KEY` and `PRISON_PROVIDER=nvidia`.
 
-Anahtar yoksa uygulama **yerel kural tabanlı motorla** çalışır ve arayüzde bunu açıkça belirtir.
-Yerel motor tüm akışı (analiz, derleme, revizyon, sürümler) uçtan uca çalıştırır ama anlamsal
-analiz için bir AI sağlayıcısı gerekir.
+Without a key the application runs on the **local rule-based engine** and says so clearly in the interface. The
+local engine runs the whole flow (analysis, compiling, revision, versions) end to end, but semantic analysis needs
+an AI provider.
 
-NVIDIA ve DeepSeek çağrıları gerçek çıktı şemasını modele iletir ve JSON yanıt ister.
-Yanıtlar yerelde doğrulanır; kesilmiş yanıtlar ve sağlayıcı reddi ayrı hata olarak işlenir.
-Çağrıların zaman aşımı ve yeniden deneme sayısı sınırlıdır.
-NVIDIA yalnızca tamamlanmış HTTP 429/503 yanıtlarında 500 ms sonra bir kez daha
-denenir; iki çağrı aynı, en fazla 180 saniyelik süreyi paylaşır. Masa adımları daha kısa
-bir bütçe verebilir. Zaman aşımı veya genel ağ hatası
-otomatik tekrarlanmaz. Kesilen Ultra yanıtında düzeltme çağrısı gerçek token bütçesini
-8000'den 16000'e yükseltir; NVIDIA için artırma üst sınırı 32768'dir.
-Nemotron 3.5 Lightning için JSON üretiminde `chat_template_kwargs.enable_thinking=false`
-gönderilir; planlama, üretim ve son metin değerlendirmesi uygulamanın ayrı adımlarıdır.
-Bu ayar, [NVIDIA'nın yapılandırılmış çıktı yönergesini](https://docs.nvidia.com/nim/large-language-models/2.0.10/get-started/advanced/get-started-nemotron-3.5-lightning.html)
-izler ve yanıt bütçesinin uzun bir iç iz yerine JSON sonucuna ayrılmasını sağlar.
+NVIDIA and DeepSeek calls pass the real output schema to the model and ask for a JSON response. Responses are
+validated locally; truncated responses and provider refusals are handled as separate errors. Call timeouts and
+retry counts are limited. NVIDIA is retried once, after 500 ms, only on completed HTTP 429/503 responses; both
+calls share the same budget of at most 180 seconds. Council steps may give a shorter budget. Timeouts and general
+network errors are not retried automatically. For a truncated Ultra response the correction call raises the real
+token budget from 8000 to 16000; the ceiling for NVIDIA is 32768. For Nemotron 3.5 Lightning,
+`chat_template_kwargs.enable_thinking=false` is sent for JSON generation; planning, generation and final-text
+review are separate steps of the application. This follows
+[NVIDIA's structured output guide](https://docs.nvidia.com/nim/large-language-models/2.0.10/get-started/advanced/get-started-nemotron-3.5-lightning.html)
+and keeps the response budget for the JSON result instead of a long internal trace.
 
-`nvidia/nemotron-3-ultra-550b-a55b` seçildiğinde Ultra çağrıları
-`reasoning_effort=medium`, `enable_thinking=true`, `medium_effort=true`, `temperature=1`,
-`top_p=0.95` ve en az 8000 token bütçesi kullanır. Bu modele özgü ayarlar diğer
-sağlayıcılara taşınmaz. [NVIDIA Ultra API belgesi](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-ultra-550b-a55b-infer)
-parametreleri açıklar; bu kurulumdaki hosted uç nokta kabul etmediği için
-`reasoning_budget` gönderilmez. Daha büyük modelde analiz ve denetim daha uzun sürebilir;
-başarısız veya geçersiz yanıtlar geçerli bir sonuç gibi kaydedilmez.
-Ultra yanıtı parça parça alınır; yalnızca son içerik parçaları birleştirilir, iç düşünce
-izi arayüze veya görev kaydına aktarılmaz. Başarılı bitiş işareti, tam JSON ve şema
-doğrulaması gerekir. Bağlantı ve bütün yanıt akışı aynı 180 saniyelik sınırı paylaşır;
-yarım metin başarı sayılmaz. Zaman aşımı bağlantı hatasından ayrı açıklanır.
+When `nvidia/nemotron-3-ultra-550b-a55b` is selected, Ultra calls use `reasoning_effort=medium`,
+`enable_thinking=true`, `medium_effort=true`, `temperature=1`, `top_p=0.95` and a budget of at least 8000 tokens.
+These model-specific settings are not carried over to other providers. The
+[NVIDIA Ultra API documentation](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-ultra-550b-a55b-infer)
+describes the parameters; `reasoning_budget` is not sent because the hosted endpoint in this setup does not accept
+it. Analysis and review can take longer on the larger model; failed or invalid responses are never saved as a
+valid result. The Ultra response is received in chunks; only the final content chunks are joined, and the internal
+thinking trace is never passed to the interface or the task record. A successful finish signal, complete JSON and
+schema validation are required. The connection and the whole response stream share the same 180-second limit;
+half a text does not count as success. A timeout is reported separately from a connection error.
 
-Super için `medium` yerine desteklenen `low` akıl yürütme, yüksek çaba isteyen adımlarda
-`high` kullanılır; kendi düşünme şablonu ve NVIDIA'nın önerdiği örnekleme ayarları gönderilir.
-[Super model kartı](https://build.nvidia.com/nvidia/nemotron-3-super-120b-a12b/modelcard)
-bu kontrolleri açıklar. GPT-OSS çağrıları ayrı çaba ve örnekleme ayarlarıyla akar;
-20B için gönderilen çıktı bütçesi hosted API'nin 4096 token sınırını aşmaz.
-[GPT-OSS 20B API belgesi](https://docs.api.nvidia.com/nim/reference/openai-gpt-oss-20b-infer)
-bu sınırı ve geçerli çaba seçeneklerini belirtir.
+For Super, the supported `low` reasoning is used instead of `medium`, and `high` for high-effort steps; its own
+thinking template and NVIDIA's recommended sampling settings are sent. The
+[Super model card](https://build.nvidia.com/nvidia/nemotron-3-super-120b-a12b/modelcard) explains these controls.
+GPT-OSS calls run with their own effort and sampling settings; the output budget sent for 20B does not exceed the
+hosted API's 4096-token limit. The [GPT-OSS 20B API documentation](https://docs.api.nvidia.com/nim/reference/openai-gpt-oss-20b-infer)
+states this limit and the valid effort options.
 
-Claude motorunda structured outputs (`output_config.format`) kullanılır. Çağrı seçilen modelle
-yapılır; ret yanıtı anlaşılır hata olarak gösterilir, başka modele örtük yönlendirme yapılmaz.
+The Claude engine uses structured outputs (`output_config.format`). The call is made with the selected model; a
+refusal is shown as a clear error, and there is no implicit fallback to another model.
 
-Diğer komutlar: `npm test` (vitest), `npm run typecheck`, `npm run build`.
+Other commands: `npm test` (vitest), `npm run typecheck`, `npm run build`.
 
-### Çok modelli AI masası
+### Multi-model AI council
 
-Tek NVIDIA anahtarıyla farklı model uç noktalarına gerçek çağrı yapılır; aynı modelin
-altı kişiliğe bölünmesi altı farklı model sayılmaz. Bu kurulumda masa açıktır.
+With one NVIDIA key, real calls are made to different model endpoints; splitting the same model into six personas
+does not count as six different models. The council is on in this setup.
 
-Varsayılan masa (4 Ekim 2026 canlı testine göre): `nvidia/nemotron-3-ultra-550b-a55b`,
+Default council (per the live test of 4 October 2026): `nvidia/nemotron-3-ultra-550b-a55b`,
 `nvidia/nemotron-3-super-120b-a12b`, `openai/gpt-oss-20b`, `meta/muse-glimmer-30b`,
-`meta/llama-3.2-90b-vision-instruct`, `nvidia/nemotron-3.5-lightning-30b-a3b`.
-Bu bilgisayardaki son bağlantı testlerinde Ultra ve Llama yanıt vermediğinden yerel ayar
-ana motor olarak Super'ı kullanır; masada Ultra yerine `poolside/laguna-xs-2.1`, Llama
-yerine `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` bulunur. Diğer dört koltuğun
-uzmanlıkları korunur. Ultra ve Llama yalnız ön kontrolü geçerlerse yedek olarak alınır.
-Aynı testte GLM-5.3, DeepSeek v4.1 Flash, Kimi K3 ve Gemma 4 sürekli zaman aşımına düştü.
-Katalogdaki birçok model de bu hesapta 404 döndü. Model erişimi zamanla değişir:
-`npm run council:check` masadaki modelleri, `npm run council:check -- --catalog` ise
-anahtarın listelediği tüm modelleri dener. Anahtar ekrana yazılmaz. Yapılandırılmış
-model sayısı, o anda hepsinin başarıyla yanıt verdiği anlamına gelmez. Başarılı bir sürümün
-masa kaydı hangi modellerin tamamlandığını, hangilerinin hata verdiğini ayrı gösterir.
+`meta/llama-3.2-90b-vision-instruct`, `nvidia/nemotron-3.5-lightning-30b-a3b`. Because Ultra and Llama did not
+respond in the latest connection tests on the development machine, the local setting uses Super as the main engine;
+at the table, `poolside/laguna-xs-2.1` replaces Ultra and `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` replaces
+Llama. The specialties of the other four seats are kept. Ultra and Llama are taken as stand-ins only if they pass
+the pre-check. In the same test GLM-5.3, DeepSeek v4.1 Flash, Kimi K3 and Gemma 4 kept timing out, and many catalog
+models returned 404 for that account. Model access changes over time: `npm run council:check` tries the models at
+the table and `npm run council:check -- --catalog` tries every model the key lists. The key is never printed. The
+number of configured models does not mean that all of them answered successfully at that moment. The council record
+of a successful version shows separately which models completed and which failed.
 
-Standart ve JB promptları aynı denetimli masadan geçer. Kullanıcı normal sohbet, telefon,
-tarayıcı veya araç kullanan agent ortamını seçer; bu seçim hesap erişimi veya yeni yetki
-vermez. Agent seçimi eski Agent Modu düğmesiyle birlikte güncellenir. Her iki yöntemde de
-görev koşulları ortak ve bağlayıcıdır; çoğunluk görüşü kullanıcı sınırlarını aşamaz.
+Standard and JB prompts go through the same reviewed council. The user chooses a normal chat, phone, browser or
+tool-using agent setting; this choice grants no account access or new permission. The agent choice is kept in sync
+with the older Agent Mode switch. In both methods the task conditions are shared and binding; a majority view cannot
+override the user's limits.
 
-**Ön kontrol ve yedekler.** Masa başlamadan her model en fazla 20 saniyelik küçük bir JSON
-testinden geçer. Yanıt vermeyenin yerine `PRISON_COUNCIL_RESERVE_MODELS` listesindeki ilk
-çalışan yedek aynı koltuk ve uzmanlıkla oturur (varsayılan yedekler kodda; `none` kapatır).
-Değişiklikler sonuç panelinde gösterilir.
+**Pre-check and stand-ins.** Before the council starts, each model passes a small JSON test of at most 20 seconds.
+A model that does not respond is replaced by the first working stand-in from `PRISON_COUNCIL_RESERVE_MODELS`, in
+the same seat with the same specialty (default stand-ins are in the code; `none` turns this off). The changes are
+shown in the result panel.
 
-**Derinlik.** `PRISON_COUNCIL_DEPTH=deep` varsayılandır. Bu ayarda:
+**Depth.** `PRISON_COUNCIL_DEPTH=deep` is the default. With this setting:
 
-- Kimse yazmadan önce her model görevi kendi uzmanlık alanından inceler. Bulgular, riskler,
-  açık sorular ve yaklaşım masaya paylaşılır; herkes önerisini bu notlardan öğrenerek yazar.
-  Bu bir internet araştırması değildir: modeller yalnızca görev durumunu ve sözleşmeyi inceler.
-- Kapışmada finalden önce en az 3 dövüş turu yapılır. Jüri hâlâ orta veya yüksek önemde sorun
-  bildiriyorsa ya da en iyi puan yükselmeye devam ediyorsa 5 tura kadar sürer.
-- Masada üyeler tartışmadan sonra kendi önerilerini birbirlerinden öğrenerek geliştirir.
-  Ortak metin, herkes onaylasa bile en az 2 tur denetlenir. Orta düzey sorun kaldıkça en fazla
-  4 tura kadar cilalanır. Sonraki bir cilalama onayı kaybederse son onaylanan metin korunur.
+- Before anyone writes, each model examines the task from its own specialty. Findings, risks, open questions and the
+  approach are shared at the table; everyone writes their proposal learning from these notes. This is not web
+  research: the models only examine the task state and the contract.
+- In the competition there are at least 3 battle rounds before the final. If the jury still reports medium or high
+  severity issues, or the best score keeps rising, it goes on for up to 5 rounds.
+- At the team table, after the discussion the members improve their own proposals by learning from each other. The
+  shared text is reviewed for at least 2 rounds even if everyone approves, and polished for up to 4 rounds while
+  medium-level issues remain. If a later polish loses approval, the last approved text is kept.
 
-`quick` kısa akışı kullanır; beş veya altı adayın üç finaliste inmesi iki eleme turu gerektirir.
-Değerlendirme çağrıları başarısız olsa da tur üst sınırı aşılmaz. Sınırda üçten fazla aday
-kalırsa kalanlar son bağımsız değerlendirmeye girer; yeterli kanıt yoksa kazanan kaydedilmez.
-Derin modun süresi sağlayıcı yanıtlarına bağlıdır; canlı denemelerde 25 dakikayı, yoğun uç
-noktalarda 50 dakikayı aşan akışlar görüldü. Geçen süre tek başına işi sonlandırmaz.
+`quick` uses the short flow; five or six candidates need two elimination rounds to come down to three finalists.
+Even if evaluation calls fail, the round limit is not exceeded. If more than three candidates remain at the limit,
+the rest go to a final independent evaluation; without enough evidence no winner is recorded. The duration of the
+deep mode depends on provider responses; live runs over 25 minutes, and over 50 minutes on busy endpoints, have been
+seen. Elapsed time alone does not end the job.
 
-**Yarışma masası = kapışma arenası.**
+**Competition table = the arena.**
 
-İzleme sahnesinde tribün kuşlarının dört siluet ailesi ve beş tepki biçimi vardır; aynı
-seyirci hareketi arka arkaya tekrarlanmaz. Tepkiler gerçek sahne olaylarına bağlıdır.
-Kaydedilen konuşma alıntıları sahnenin altında okunur; telefonda karakterleri kapatmaz.
-"Okuma temposu" uzun açıklamalara daha fazla süre ayırır, klavyeyle kullanılabilen
-çizelge herhangi bir gerçek ana atlamayı sağlar. Jüri değerlendirmesi puan olarak gösterilir.
-Tekrar gelen aynı sunucu bilgisi hareketi ve izleme süresini sıfırlamaz; kayıt sonunda
-oynatma durur. Hareket azaltma tercihi korunur.
+The stands hold four silhouette families of birds with five kinds of reaction; the same crowd move is not repeated
+back to back. Reactions follow real stage events. Recorded speech quotes are read below the stage and do not cover
+the characters on a phone. "Reading pace" (*Okuma temposu*) gives longer explanations more time, and a keyboard-accessible timeline
+lets you jump to any real moment. The jury's evaluation is shown as a score. The same server update arriving again
+does not reset the animation or the viewing time; playback stops at the end of the record. The reduced-motion
+preference is respected.
 
-1. Modeller bağımsız adaylar üretir.
-2. Jüri (aday üreten tüm modeller, elenenler dahil) kendi adayı hariç her adayı altı ölçütte
-   puanlar ve eleştirir. Her ölçütte o turun en iyisi bir "silah" kazanır: kılıç (amaç uyumu),
-   yay (bağlam), kalkan (sınırlar), çekiç (uygulama), mızrak (çıktı), asa (hedef AI uyumu).
-3. Üçten fazla aday varsa en düşük ortalamalılar elenir ve jüri sırasına geçer
-   (6 → 4 → 3). Kalanlar eleştirilerle adaylarını güçlendirir.
-4. Üç finalist model adları gösterilmeden oylanır; kimse kendi adayına oy veremez.
-   Bir adayın kazanabilmesi için oyların en az üçte ikisi tam onay (her ölçütte en az 0.75)
-   olmalı ve en fazla bir jüri üyesi yüksek önemde sorun bildirmiş olmalıdır.
+1. The models produce independent candidates.
+2. The jury (every model that produced a candidate, eliminated ones included) scores and critiques every candidate
+   except its own on six criteria. On each criterion the round's best wins a "weapon": sword (goal alignment), bow
+   (context), shield (limits), hammer (execution), spear (output), staff (target-AI fit).
+3. If there are more than three candidates, the lowest averages are eliminated and join the jury (6 → 4 → 3). The
+   rest strengthen their candidates with the critiques.
+4. The three finalists are voted on without model names; nobody can vote for their own candidate. For a candidate
+   to win, at least two thirds of the votes must be full approvals (at least 0.75 on every criterion) and at most
+   one juror may have reported a high-severity issue.
 
-**Ekip masası = karanlık oda, oylama yok.** Modeller öneri üretir, birbirlerinin önerilerini
-kendi uzmanlık alanından tartışır. Bir yazıcı model tüm önerileri ve tartışmayı ortak metinde
-birleştirir. Masa, diğer üyelerin hepsi temiz onay verene kadar metni birlikte düzeltir. Son turda
-oybirliği yoksa en son geniş uzlaşma sağlanan metin kullanılır: üyelerin en az üçte ikisi tam
-onay vermiş olmalı ve yüksek önemde itiraza ikinci bir üye katılmamış olmalıdır. Tek başına kalan
-ciddi çekince her turda tartışılır ve karara yazılır, ama veto sayılmaz. Canlı denemelerde tek bir
-küçük modelin her turda çelişkili "yüksek" itirazlar tekrarlayıp masayı kilitlediği görüldü.
-Tur sınırında uzlaşma çıkmazsa veya ortak metin yazma çağrıları tamamlanamazsa gerçek adaylar
-çöpe atılmaz: en az üç aday ve iki bağımsız
-değerlendirmenin kanıtı varsa eldeki en güçlü metin son denetime gönderilir. Karar kaydı
-uzlaşma olmadığını, itirazları ve yanıt vermeyen üyeleri açıkça belirtir. Aynı aktarım kapışma
-arenasında da geçerlidir; seçim, masa onayı veya oybirliği gibi gösterilmez. Yeterli gerçek
-aday/değerlendirme yoksa üretim hata verir. Her durumda bağımsız son denetçi ve kullanıcı
-sınırları için kural kontrolleri geçmeden yeni prompt kaydedilmez.
+**Team table = the dark room, no voting.** The models produce proposals and discuss each other's proposals from
+their own specialty. A writer model merges all proposals and the discussion into a shared text. The table corrects
+the text together until all other members give a clean approval. If there is no unanimity in the last round, the
+latest text with broad agreement is used: at least two thirds of the members must have given full approval and no
+second member may have joined a high-severity objection. A lone serious reservation is discussed in every round and
+written into the decision, but it is not a veto. In live runs a single small model was seen repeating contradictory
+"high" objections every round and locking the table. If no agreement emerges by the round limit, or the shared-text
+writing calls cannot be completed, real candidates are not thrown away: if there is evidence from at least three
+candidates and two independent evaluations, the strongest text at hand goes to the final review. The decision
+record states clearly that there was no agreement, the objections and the members that did not respond. The same
+hand-over applies in the arena; the choice is never shown as table approval or unanimity. Without enough real
+candidates and evaluations, generation fails. In every case no new prompt is saved until the independent final
+reviewer and the rule checks for the user's limits have passed.
 
-Yapılandırılmış konsey başlamadan önce görev sözleşmesi gerçek kullanıcı talimatlarıyla
-denetlenir. Türetilmiş bir koşul veya plan çelişirse yalnızca güvenli düzeltmeler uygulanır,
-gerekirse plan yenilenir ve sözleşme bir kez daha denetlenir. Sorun sürerse masa başlamaz.
-Kaynak denetimi ve son metin denetimi ayrı ayrı en fazla bir onarım yapabilir.
+Before the structured council starts, the task contract is checked against the real user instructions. If a derived
+condition or the plan conflicts, only safe corrections are applied, the plan is renewed if needed and the contract
+is checked once more. If the problem persists, the council does not start. The source check and the final-text check
+can each make at most one repair.
 
-Her iki yöntemde seçilen tam metin ayrıca bağımsız bir modelle görev/kaynak denetiminden geçer.
-Denetim metni reddederse masa baştan kurulmaz: seçilen metin bulgularla bir kez düzeltilir
-ve yeniden bağımsız denetlenir. Seçilen model düzeltme çağrısında yanıt veremezse başka bir
-gerçek jüri üyesi yazmayı devralabilir; kendisini değerlendiremez. Bağımsız denetçi
-kalmıyorsa metin kaydedilmez. Derin modun 150 saniyelik çağrı bütçesi son düzeltmede de
-korunur. İlk seçim, düzeltmeyi yazan model ve son denetçi sonuçta ayrı belirtilir.
-Sonuç ancak bu kontrol de geçerse kaydedilir.
-Son denetimi yapan model geçici olarak yanıt veremezse, metni onaylayan diğer jüri üyeleri
-sırayla devralır. Düzeltme için plan yenilemek gerekip ana motor geçici olarak aşırı yüklüyse,
-planı masa üyeleri yeniler. Her iki durumda da iş yine bir yapay zekâ çağrısıyla yapılır.
-Amaç uyumu veya sınır netliğinde ciddi bir bulgu ya da yetersiz puan varsa, mevcut çözüm planı da bir kez yenilenir; yeni görev sözleşmesiyle üretilen tam metin yeniden denetlenir.
-Son denetçi kaydı gerçekten yanıt veren modele güncellenir. Denetimini tamamlayamayan
-üyeler onay vermiş sayılmaz ve eksik yanıtlar karar metninde belirtilir.
+In both methods the chosen full text also passes a task/source review by an independent model. If the review
+rejects the text, the council is not rebuilt from scratch: the chosen text is corrected once with the findings and
+reviewed independently again. If the chosen model cannot answer the correction call, another real juror can take
+over the writing; it cannot evaluate itself. If no independent reviewer remains, the text is not saved. The deep
+mode's 150-second call budget is kept for the final correction too. The first choice, the model that wrote the
+correction and the final reviewer are stated separately in the result. The result is saved only if this check
+passes as well. If the final reviewer is temporarily unavailable, the other jurors who approved the text take over
+in turn. If the plan must be renewed for the correction and the main engine is temporarily overloaded, the council
+members renew it. In both cases the work is still done by an AI call. If there is a serious finding or an
+insufficient score on goal alignment or clarity of limits, the current solution plan is also renewed once; the full
+text produced with the new task contract is reviewed again. The final reviewer record is updated to the model that
+actually responded. Members that could not complete their review do not count as having approved, and missing
+responses are stated in the decision text.
 
-Jüri çağrılarında yalnızca geçici ağ, yoğunluk ve zaman aşımı hatalarına bir ek deneme
-verilir. Kimlik doğrulama/yapılandırma hatası veren jüri aynı oturumda tekrar çağrılmaz;
-yokluğu kayda geçer. Son metin denetiminde başka gerçek bağımsız jüri devralabilir.
-Geçersiz yapılandırılmış yanıtın kendi düzeltme denemesi dışında aynı tur tekrar edilmez;
-yeni metnin sonraki turu yeniden değerlendirilebilir.
+In juror calls, only temporary network, load and timeout errors get one extra attempt. A juror that returns an
+authentication/configuration error is not called again in the same session; its absence is recorded. In the
+final-text review another real independent juror can take over. Apart from its own correction attempt for an
+invalid structured response, the same round is not repeated; the next round of the new text can be evaluated again.
 
-Uzlaşmasız seçim, sahnede **son denetime seçilen aday** olarak gösterilir; uzlaşma veya
-zafer canlandırması yapılmaz. Son kontrolü geçen kayıtlı promptta seçimin dayanağı ayrıca
-korunur. Önceki kayıtlar yeni alanlar olmadan okunmaya devam eder.
+A selection without agreement is shown on stage as **the candidate chosen for the final review**; no agreement or
+victory animation is played. In the saved prompt that passed the final check, the basis of the choice is kept
+separately. Older records keep loading without the new fields.
 
-Derleme, hedef/modifier değişimi ve revizyon HTTP 202 ile hemen kabul edilir; uzun AI çalışması
-tarayıcı bağlantısından bağımsız bir yerel sunucu işi olarak sürer. İş durumu ve son tartışma
-`data/prisons/.operations` altında tutulur (`PRISON_DATA_DIR` değişirse o dizinin altında).
-Tarayıcı toplam üretim süresine sınır koymaz; kısa durum okuması zaman aşımına uğrarsa aynı
-işi tekrar takip eder, ikinci bir üretim başlatmaz. Sayfa yenilenince seçili görevin işi tekrar
-bulunur; bitince yeni prompt otomatik yüklenir. Hata olursa tartışma, açık hata nedeni ve yeniden
-deneme düğmesi görünür kalır; önceki geçerli prompt korunur.
+Compiling, target/modifier changes and revisions are accepted immediately with HTTP 202; the long AI work runs as a
+local server job independent of the browser connection. Job status and the latest discussion are kept under
+`data/prisons/.operations` (under that directory if `PRISON_DATA_DIR` changes). The browser puts no limit on the
+total generation time; if a short status read times out, it follows the same job again and does not start a second
+generation. After a page reload the selected task's job is found again; when it finishes, the new prompt loads
+automatically. If there is an error, the discussion, the clear cause and a retry button stay visible; the previous
+valid prompt is kept.
 
-Yeni iş kayıtları gönderilen üretim ayarlarını, değişikliği, revizyon mesajını veya soru
-yanıtlarını da saklar. **Aynı işlemi yeniden dene** bunları sunucuda aynen tekrar kullanır;
-eski görev ayarlarıyla farklı bir üretime dönüşmez. Görev veya son işlem değişmişse eski
-isteğin tekrarı reddedilir. Önceki iş kayıtlarında bu bilgi bulunmadığından **Promptu
-yeniden üret** güncel görev için yeni üretim başlatır.
+New job records also store the generation settings sent, the change, the revision message or the answers to
+questions. **Retry the same operation** (*Aynı işlemi yeniden dene*) reuses them exactly on the server; it does not turn into a different
+generation with old task settings. If the task or the last operation has changed, a retry of the old request is
+refused. Older job records do not hold this information, so **Regenerate the prompt** (*Promptu yeniden üret*) starts a new generation for
+the current task.
 
-Masanın seçtiği tam taslak, son denetim başlamadan `data/prisons/.council-checkpoints`
-altına özel olarak kaydedilir. Bu taslak onaylanmış bir prompt sürümü değildir ve genel
-API'den gösterilmez. Son düzeltme veya denetim bağlantısı kesilirse yeniden deneme kalan
-aşamadan devam eder; başarıyla düzeltilmiş metin tekrar yazdırılmaz, yalnızca denetlenir.
-Görev, kullanıcı talimatları, ayarlar, etkin sürüm veya model yapılandırması değişmişse
-eski taslak kullanılmaz. Düzeltmeden sonra kalite kontrolünü geçemeyen metin için yeni bir
-masa kurulur. Yeni prompt kalıcı olarak kaydedildikten sonra özel taslak temizlenir.
-Aynı metin revizyonu veya aynı soru-yanıt çifti yeniden denenirken hazırlanmış revizyon
-ve gerçek kullanıcı kaydının kimliği korunur; analiz, planlama ve tartışma tekrarlanmaz.
-Soru bağlamı, yanıt veya etkin kullanıcı dalı değişirse yeni analiz ve tartışma yapılır.
+The full draft chosen by the council is saved privately under `data/prisons/.council-checkpoints` before the final
+review starts. This draft is not an approved prompt version and is not exposed through the public API. If the
+connection drops during the final correction or review, a retry continues from the remaining stage; a successfully
+corrected text is not written again, only reviewed. If the task, user instructions, settings, the active version or
+the model configuration has changed, the old draft is not used. For a text that fails the quality check after
+correction, a new council is set up. The private draft is cleared once the new prompt is saved permanently. When the
+same text revision or the same question/answer pair is retried, the prepared revision and the identity of the real
+user record are kept; analysis, planning and discussion are not repeated. If the question context, the answer or
+the active user branch changes, a new analysis and discussion are run.
 
-İlk üretim sürerken durum **Üretiliyor**, mevcut bir prompt yeniden hazırlanırken
-**Yeni sürüm hazırlanıyor** görünür. Geçen süre, kaydedilmiş gerçek başlangıçtan hesaplanır;
-sayfa yenilemesi veya aşama değişimi sayacı sıfırlamaz. Bu sayaç bitiş tahmini değildir.
+While the first generation runs the status shows **Generating** (*Üretiliyor*); while an existing prompt is being prepared
+again it shows **Preparing a new version** (*Yeni sürüm hazırlanıyor*). Elapsed time is computed from the saved real start; a page reload or a stage
+change does not reset the counter. This counter is not an estimate of when it will finish.
 
-Devam eden iş aynı sunucu sürecindeki kod yenilemelerinde kilidini ve ilerlemesini korur.
-Sunucu veya bilgisayar kapanırsa devam eden API çağrıları sürmez. Yeniden açılışta eski iş
-`interrupted` olarak işaretlenir; son tartışma ve geçerli prompt korunur, kullanıcı yeniden
-deneyebilir. Tam taslak seçilip özel olarak saklanmışsa kalan son denetimden devam edilir;
-henüz aday seçilmemişse masa yeniden kurulur. Bu iş yürütücüsü yerel Node sunucusu içindir; sunucusuz dağıtımda kalıcı dış iş
-kuyruğu gerekir. Aynı görevde ikinci üretim, silme ve sürüme dönüş devam eden işlemi değiştiremez.
+A running job keeps its lock and progress across code reloads within the same server process. If the server or the
+computer shuts down, running API calls do not continue. On restart the old job is marked `interrupted`; the latest
+discussion and the valid prompt are kept, and the user can retry. If a full draft had been chosen and saved
+privately, the job continues from the remaining final review; if no candidate had been chosen yet, the council is set
+up again. This job runner is for the local Node server; a serverless deployment needs a persistent external job
+queue. A second generation, deletion or a version restore on the same task cannot change the running operation.
 
-**Hafıza.** Yeniden üretme veya revizyon sırasında, görüntülenen sürümün masa sonucu (benimsenen
-yön ve açık bulgular) yeni masaya çalışma hafızası olarak verilir. Bu bilgi kullanıcı talimatı
-veya izin sayılmaz; mevcut görev ve revizyonlar farklıysa onlar geçerlidir.
+**Memory.** When regenerating or revising, the council result of the displayed version (the adopted direction and
+open findings) is given to the new council as working memory. This information does not count as a user instruction
+or permission; if the current task and revisions differ, they prevail.
 
-**Görsel masa.** Masa çalışırken ve sonrasında 3D sahne (three.js) gösterilir. Ekip masasında
-karanlık odada lambanın altında oturan, kapışmada yeşil sahada savaşan renkli robotlar vardır.
-Konuşan model yeşil yanar, düşünen model yanıp söner. Baloncuklar modellerin masada paylaştığı
-önerilerden, eleştirilerden ve kararlardan alıntıdır; gizli iç düşünce izi kaydedilmez. Kayıtlı
-sürümler baştan oynatılabilir, adım adım ilerletilebilir ve konuşma dökümü okunabilir.
+**Visual council.** While the council works and afterwards, a 3D scene (three.js) is shown: at the team table,
+colorful Pırpır birds sit under the lamp in a dark room; in the competition they fight on a green field. The
+speaking model glows green and the thinking model blinks. Speech bubbles quote the proposals, critiques and
+decisions the models shared at the table; no hidden internal thinking trace is recorded. Saved versions can be
+replayed from the start, stepped through, and the transcript can be read.
 
-En az üç ayrı model gerçek aday üretmeli; seçime dayanak olan aday için en az iki bağımsız
-modelin karşılaştırması gerekir. Keşif notu alınamayan üye aday üretmeyi yine deneyebilir;
-eksik keşif veya değerlendirme yanıtları başarı sayılmaz.
-Üç iş aynı anda yürütülür; bir modelin yapılandırılmış yanıt denemeleri kısa modda ortak
-90, derin modda ortak 150 saniyelik bütçeyi paylaşır (yazıcının birleştirme çağrısı
-150 saniye). Bozuk JSON dönen bir jüri
-değerlendirmesi aynı bütçe içinde bir kez düzeltme ister. Yetersiz katılımda veya geçmeyen son
-denetimde mevcut kayıt korunur; yerel bir metin çok modelli başarı gibi sunulmaz. Puanlar model
-değerlendirmesidir, doğruluk veya başarı garantisi değildir.
+At least three separate models must produce real candidates; the candidate behind a choice needs a comparison by
+at least two independent models. A member whose investigation note could not be obtained can still try to produce a
+candidate; missing investigation or evaluation responses do not count as success. Three jobs run at the same time;
+the structured-response attempts of one model share a common budget of 90 seconds in quick mode and 150 seconds in
+deep mode (the writer's merge call has 150 seconds). A juror evaluation that returns broken JSON asks for one
+correction within the same budget. With insufficient participation or a failed final review, the existing record is
+kept; a local text is never presented as a multi-model success. Scores are model evaluations, not a guarantee of
+correctness or success.
 
-GitHub araştırmasında [Microsoft Agent Framework](https://github.com/microsoft/agent-framework)
-ile paralel/ortak çalışma, [ChatEval](https://github.com/thunlp/ChatEval) ile bağımsız
-hakemlik ve [Multiagent Debate](https://github.com/composable-models/llm_multiagent_debate)
-ile sınırlı turda karşılıklı düzeltme yaklaşımları incelendi. Bu akış mevcut TypeScript
-uygulamasında uygulanmıştır. Dış projelerden bir çalışma zamanı kurulmadı; yalnızca görsel
-sahne için `three` paketi eklendi ve yalnızca sahne açıldığında tarayıcıda yüklenir.
+The design draws on approaches studied on GitHub: parallel/joint work in
+[Microsoft Agent Framework](https://github.com/microsoft/agent-framework), independent judging in
+[ChatEval](https://github.com/thunlp/ChatEval) and mutual correction over limited rounds in
+[Multiagent Debate](https://github.com/composable-models/llm_multiagent_debate). The flow is implemented in the
+existing TypeScript application. No runtime from external projects was installed; only the `three` package was added
+for the visual scene, and it loads in the browser only when the scene is opened.
 
-### İstek ekranı
+### Request screen
 
-- **Prompt modu:** “İsteğe göre” seçeneği metindeki mod isteğini yorumlar; “Standart” ve “JB modu”
-  seçimleri açık tercih olarak sunucuya gönderilir. JB seçildiğinde giriş alanı kırmızı çerçeveyle gösterilir.
-- **Taslak kurtarma:** İstek metni, hedef AI, dil, mod, kullanım ortamı ve masa tercihi bu tarayıcıda otomatik kaydedilir.
-  Yenileme sonrası taslak geri gelir; başarılı analizden sonra temizlenir. Başarısız analiz taslağı korur.
-- **Bağlantı kontrolü:** Yan menüdeki “Bağlantıyı kontrol et” düğmesi seçili modelden küçük bir JSON
-  yanıt isteyerek bağlantıyı doğrular. Sayfa açılışında uzaktan kontrol yapılmaz; eşzamanlı kontroller
-  aynı isteği paylaşır. Kontrol sonucu görev kayıtlarını değiştirmez.
-- **Çözüm planı:** API analizi isteğin asıl amacını, uygulanacak adımları, her adımın amacını ve
-  kontrol ölçütünü çıkarır. Hedef AI tercihi ve gerekçesi görünür; açık kullanıcı seçimi korunur.
-- **Eksik bilgiler:** Sonucu değiştiren sorular gösterilir ve ilk prompttan önce yanıtlanabilir.
-  İlk turda en önemli üç soru ayrı yanıt alanlarıyla sunulur. Bilinen sorular kısmen de
-  yanıtlanabilir; soru bağlamı ve kullanıcı yanıtı ayrı alanlarla gerçek revizyon API'sine
-  gönderilir. Sistem sorusu kullanıcı talimatı, izin veya kaynak alıntısı sayılmaz. Başarısız
-  işlemde yanıt alanları korunur; başarılı işlemde görev ve çözüm planı yenilenir.
-  Modelden yanıtlanmış bilgileri tekrar sormaması ve kalan önemli soruları sonraki turda
-  önceliklendirmesi istenir. Serbest metinle görev düzeltme de kullanılabilir.
-  Görev değiştiğinde plan güncel gereksinim ve görev hafızasından yeniden hazırlanır.
-  Bilinmeyenler gerçekmiş gibi doldurulmaz.
-- **Üretim kanıtı:** Standart ve JB sürümleri gerçek üretim kaynağını ve son metni denetleyen
-  katmanı gösterir. Bu denetimler prompt içindir; hedef AI'ın işi tamamladığı iddia edilmez.
+- **Prompt mode:** "As requested" interprets a mode request in the text; "Standard" and "JB mode" are sent to the
+  server as explicit choices. When JB is selected, the input is shown with a red frame.
+- **Draft recovery:** The request text, target AI, language, mode, usage setting and table choice are saved
+  automatically in this browser. After a reload the draft comes back; it is cleared after a successful analysis. A
+  failed analysis keeps the draft.
+- **Connection check:** The "Check connection" (*Bağlantıyı kontrol et*) button in the side menu verifies the connection by asking the
+  selected model for a small JSON response. No remote check runs when the page opens; concurrent checks share the
+  same request. The check result does not change task records.
+- **Solution plan:** The API analysis extracts the real goal of the request, the steps to carry out, the purpose of
+  each step and its check criterion. The target-AI choice and its reason are visible; an explicit user choice is
+  kept.
+- **Missing information:** Questions that change the result are shown and can be answered before the first prompt.
+  In the first round the three most important questions are offered with separate answer fields. Known questions can
+  be answered partially; the question context and the user's answer are sent to the real revision API in separate
+  fields. A system question never counts as a user instruction, permission or source quote. On a failed operation the
+  answer fields are kept; on success the task and the solution plan are renewed. The model is asked not to ask again
+  for information already answered and to prioritize the remaining important questions in the next round. The task
+  can also be corrected with free text. When the task changes, the plan is prepared again from the current
+  requirements and task memory. Unknowns are never filled in as if they were facts.
+- **Proof of generation:** Standard and JB versions show the real generation source and the layer that reviewed the
+  final text. These reviews are about the prompt; the application never claims the target AI has completed the work.
 
-### Kullanıcının AI ekibi ve katılımı
+### Your AI team and taking part
 
-Yan menüde **AI ekibim · API ayarları** ekranından bağlantı ekleyebilir/çıkarabilir,
-analiz modelini ve promptu hazırlayacak 3–6 farklı modeli seçebilirsin. NVIDIA, DeepSeek,
-OpenAI, Anthropic ve HTTPS üzerinden OpenAI uyumlu Chat Completions API desteklenir.
-Model kimlikleri ve uzmanlıkları kullanıcı tarafından belirlenir; sağlayıcı erişimi gerçek
-üretim öncesinde sınanır. Kaydetmek uzaktan API çağrısı yapmaz. Kayıtlı ekibe seçilmemiş
-yedek model eklenmez; başlamış işlemler kendi bağlantılarıyla tamamlanır.
+From **My AI team · API settings** (*AI ekibim · API ayarları*) in the side menu you can add and remove connections and choose the analysis model
+and 3–6 different models to prepare the prompt. NVIDIA, DeepSeek, OpenAI, Anthropic and OpenAI-compatible Chat
+Completions APIs over HTTPS are supported. Model IDs and specialties are set by the user; provider access is tested
+before real generation. Saving makes no remote API call. No stand-in model the user did not choose is added to the
+saved team; operations already started finish with their own connections.
 
-Anahtarlar sunucuda `PRISON_DATA_DIR/.provider-settings.json` içinde saklanır; bu yerel
-dosya şifrelenmez. Anahtarlar tarayıcıya geri gönderilmez veya tarayıcı depolamasına yazılmaz.
-Boş anahtar mevcut kaydı korur; **Anahtarı kaldır** açıkça kaldırır. Adres/sağlayıcı değişiminde
-yeni anahtar gerekir. İlk kayda kadar ortam ayarları kullanılır; **Başlangıç ekibine dön**
-kayıtlı ayarları kaldırarak ortam ayarlarına döner. Ayar değişiklikleri yeni üretimlerde geçerlidir.
+Keys are stored on the server in `PRISON_DATA_DIR/.provider-settings.json`; this local file is not encrypted. Keys
+are never sent back to the browser or written to browser storage. An empty key keeps the existing one; **Remove key**
+(*Anahtarı kaldır*) removes it explicitly. Changing the address or provider requires a new key. Until the first save the environment
+settings are used; **Back to the starting team** (*Başlangıç ekibine dön*) removes the saved settings and returns to the environment settings.
+Setting changes apply to new generations.
 
-**Sahneye katıl** bölümündeki 50 ayrı eklem hareketi bir karaktere seçilerek veya kısa hareket
-komutuyla gönderilir. Komut izlemeyi duraklatıp sahneyi görünür alana getirir; arka plandaki
-üretimi, jüri puanlarını ve olay kaydını değiştirmez. Oturan karakterler ve eşya taşıyan kanatlar
-korunur. Otomatik hareketler karaktere ve gerçek olaya göre çeşitlenir; aynı klip arka arkaya
-seçilmez. Silahlar kanat/sırt bağlantılarında taşınır; açık ekipman rehberi her birinin gerçek
-jüri ölçütünü ve o andaki sahibini gösterir.
+In the **Join the stage** (*Sahneye katıl*) section, 50 separate joint gestures can be sent to a character by choosing one or with a
+short gesture command. The command pauses viewing and brings the stage into view; it does not change the generation
+running in the background, the jury scores or the event record. Seated characters and wings carrying items are
+respected. Automatic gestures vary by character and by the real event; the same clip is not chosen twice in a row.
+Weapons are carried at wing/back attachment points; an open equipment guide shows the real jury criterion behind each
+one and its current holder.
 
-Hedef/sınır/çıktı ipuçları kullanıcının görünür isteğine eklenir. Kapatılabilir **Nasıl kullanırım?**
-açıklamaları aşamaya uygun yönlendirme verir. Hazır sürümde tam prompt kopyalanabilir veya
-`.txt` indirilebilir; başka AI'a gönderme kullanıcının kontrolündedir. Sonuç geri bildirimi
-gerçek revizyon akışına gider; tamamlanmadan başarı mesajı verilmez. Başarısız tartışma kaydı
-hazır prompt gibi sunulmaz.
+Goal/limit/output hints are added to the user's visible request. Closable **How do I use this?** (*Nasıl kullanırım?*) explanations give
+guidance suited to each stage. In the finished version the full prompt can be copied or downloaded as `.txt`; sending
+it to another AI is up to the user. Feedback on the result goes into the real revision flow; no success message is
+shown before it completes. A failed discussion record is never presented as a finished prompt.
 
-Bu yapının amacı ve genişletme kuralları: [ürün sistemi](docs/product-system.md).
+The purpose of this structure and the rules for extending it: [product system](docs/product-system.en.md).
 
-## Mimari
+## Architecture
 
 ```
 src/
-  models/              Zod şemaları = tek doğruluk kaynağı (Prison, Spec, Intent, Prompt, Options)
-  templates/           Ortak prompt metinleri: ifadeler, blok başlıkları, görev türü profilleri,
-                       aile şablonları, motor sistem promptları, UI etiketleri
+  models/              Zod schemas = single source of truth (Prison, Spec, Intent, Prompt, Options)
+  templates/           Shared prompt texts: phrases, block headings, task-type profiles,
+                       family templates, engine system prompts, UI labels
   core/
-    intent-engine/     LLM ile anlamsal analiz (structured output + doğrulama + kontrollü retry);
-                       local/ altında anahtarsız yedek analizör
-    task-types/        Genişletilebilir görev türü kaydı (switch-case yok)
-    prison-engine/     Prison oluşturma, durum makinesi, öğe/ID yönetimi, patch + görev hafızası, modifier'lar
-    requirement-resolver/  Intent → normalize Prison Spec; güvenlik ve profil varsayılanları
-    context-engine/    İzolasyon sınırı: derleyiciye/LLM'e yalnızca TEK prison'ın state'i verilir
-    prompt-compiler/   Blok seçimi → blok inşası → (kısaltma) → adapter → sıralama → render
-    prompt-refiner/    Standart prompt için göreve özel API yönlendirmesi; bağlayıcı sözleşme korunur
-    jailbreak-engine/ JB için göreve özel çerçeve; tam görev sözleşmesiyle birleştirilir
-    prompt-critic/     Kural tabanlı + LLM eleştirmen; düzeltmeler state'e patch olarak uygulanır
-    output-validator/  Yapısal doğrulama
-    revision-engine/   Serbest metin revizyon → StatePatch (LLM veya yerel)
-    pipeline/          analyze / compile / revise / adjust / restore akışları
-  adapters/            gpt, claude, gemini, codex + AUTO çözümleyici
+    intent-engine/     Semantic analysis with an LLM (structured output + validation + controlled retry);
+                       a keyless fallback analyzer under local/
+    task-types/        Extensible task-type registry (no switch-case)
+    prison-engine/     Prison creation, state machine, item/ID management, patch + task memory, modifiers
+    requirement-resolver/  Intent → normalized Prison Spec; safety and profile defaults
+    context-engine/    Isolation boundary: the compiler/LLM only ever gets ONE prison's state
+    prompt-compiler/   Block selection → block building → (shortening) → adapter → ordering → render
+    prompt-refiner/    Task-specific API guidance for the standard prompt; the binding contract is kept
+    jailbreak-engine/  Task-specific framing for JB; merged with the full task contract
+    prompt-critic/     Rule-based + LLM critic; corrections are applied to the state as patches
+    output-validator/  Structural validation
+    revision-engine/   Free-text revision → StatePatch (LLM or local)
+    pipeline/          analyze / compile / revise / adjust / restore flows
+  adapters/            gpt, claude, gemini, codex + AUTO resolver
   services/
-    ai/                NVIDIA / DeepSeek / Anthropic / OpenAI sağlayıcıları, hata eşleme, structured.ts
-    storage/           Her prison için ayrı JSON dosyası, atomik yazma, şema doğrulamalı okuma
-    prison-service.ts  Kilit + kalıcılık + girdi kontrolleri
-  app/api/             REST uçları
+    ai/                NVIDIA / DeepSeek / Anthropic / OpenAI providers, error mapping, structured.ts
+    storage/           A separate JSON file per prison, atomic writes, schema-validated reads
+    prison-service.ts  Locking + persistence + input checks
+  app/api/             REST endpoints
   ui/                  composer, intent-preview, prison-sidebar, prompt-output, revision-chat,
-                       council-arena (3D masa/arena sahnesi, zaman çizelgesi, baloncuklar)
+                       council-arena (3D table/arena scene, timeline, speech bubbles)
 ```
 
-### Temel kurallar
+### Core rules
 
-- **Prison = çekirdek mimari.** Her istek `data/prisons/pr_xxxxxxxx.json` olarak ayrı saklanır.
-  Hiçbir işlem iki prison'ı birlikte okumaz.
-- **Prompt Compiler yalnızca aktif prison state'ini kullanır.** Saf bir fonksiyondur
-  (`compilePrompt(toCompileInput(prison))`): aynı state → aynı prompt; dışarıdan bilgi sızamaz.
-- **AI çıktısına güvenilmez.** Her LLM yanıtı JSON parse + Zod doğrulama + anlamsal kontrolden geçer;
-  başarısızsa hatalar eklenerek **bir kez** yeniden istenir. Sonsuz retry yok.
-  Derlenen son prompt da düzeltmelerden sonra tekrar doğrulanır; geçersiz çıktı yeni sürüm olarak kaydedilmez.
-- **Kullanıcı sözü yorumdan önceliklidir.** Modelin serbest alt hedefleri örtük yorum olarak
-  işaretlenir; gerçek kullanıcı alıntıları açık talimat olarak korunur. Analiz, planlama,
-  JB/standart üretim ve jüri aynı anlam kurallarını kullanır: bir öneri ek yasak oluşturmaz,
-  negatif bir talimat gereksinimler listesinde yazıldığında da negatif kalır.
-- **Son metin gerçekten denetlenir.** AI motoru seçiliyken standart ve JB üretimi API ile yazılır;
-  kaydedilecek birleşik metin eleştirmene gönderilir. Gerekirse güvenli state düzeltmeleri uygulanır
-  ve API'ye geri bildirimle **bir** yeniden üretim yaptırılır. Yeni metin tekrar değerlendirilir.
-  Açık, revizyonla gelen ve gerekli örtük koşullar veya hafızaya bağlı öğeler eleştirmen tarafından silinemez.
-  Kalan ciddi bir sorun ya da zayıf kalite boyutu varsa yeni sürüm kabul edilmez.
-- **Kullanıcının gerçek sözleri korunur.** AI özetinin yanlış yorumladığı bir öğe yalnızca asıl
-  istekten veya aktif kullanıcı revizyonundan doğrulanabilen birebir alıntıyla düzeltilebilir.
-  Denetçi, uygulamanın numaraladığı gerçek kullanıcı ifadelerinden birini seçer; alıntı metnini
-  yeniden yazmaz. Uygulama seçimin kaynağını ve değiştirilecek öğenin korumalarını doğrular.
-  Hafızaya bağlı ve açık öğeler bu yolla değiştirilemez. Reddedilen bir şartın zorunlu hale
-  getirilmesini yakalayan bağımsız kontrol, eleştirmen yüksek puan verse de sonucu kabul etmez.
-  Düzeltilen görevle çelişen çözüm planı yeniden hazırlanıp denetlenir.
-  Kullanıcının belirtmediği, hafızaya bağlı olmayan model varsayımları temizlenebilir; kullanıcı
-  koşulları, gerekli örtük koşullar ve kalan bilinmeyenler bu istisnayla silinemez.
-  Denetçinin yayımlama/deploy gibi işlemler için eklediği yeni izin iddiaları ancak koşullarıyla
-  birlikte gerçek kullanıcı cümlesinden doğrulanabiliyorsa kabul edilir.
-- **Çıktı biçimi önceliklidir.** Ayrıntılı mod, yalnızca tablo/JSON/kod isteyen bir göreve ek
-  karar açıklamaları veya rapor bölümleri eklemez. Planlama ve doğrulama çalışma adımlarıdır;
-  son yanıtta yalnızca istenen çıktının parçası olan bilgiler raporlanır.
-- **Sürüme dönüş talimat kapsamını da geri alır.** Revizyon geçmişi korunur; geri alınmış
-  sonraki talimatlar yeni derlemeye karışmaz. Geri yüklemeden sonra verilen yeni talimatlar etkin olur.
-- **Varsayımlar ve bilinmeyenler ayrıdır.** Promptta "doğrulanmış bilgi değil" ve "cevap uydurma"
-  başlıklarıyla ayrı bloklarda yer alır.
-- **Scope'u kilitle, çözüm yeteneğini kilitleme.** Katı/özgür scope modları korumaları asla gevşetmez.
-- **Görev hafızası.** "Deploy yapma", "mimariyi değiştirme" gibi kalıcı direktifler prison'ın
-  hafızasına yazılır ve bağlı öğeleri korur; yalnızca açıkça geri alınırsa kalkar. Başka prison'a geçmez.
-  Yeni API revizyonlarında her direktif kendi ilgili öğelerinin birebir metinlerini bildirir;
-  uygulama yalnızca o revizyonda eklenen veya teyit edilen karşılıkları bağlar. İlgisiz
-  menü/bağlam bilgileri başka bir direktifin korumasına topluca alınmaz. Geçersiz bağlantı
-  yeniden doğrulanır; eski kayıtların mevcut korumaları kendiliğinden gevşetilmez.
-- **JB Modu.** Kırmızı çerçeveyle gösterilen mod analizden önce seçilebilir; seçim prison'a ve prompt
-  sürümüne kaydedilir. Üretim kaynağı (yerel/API), sağlayıcı ve model sürümle birlikte izlenir.
-  Mod değişikliği görevin amacını, açık gereksinimlerini, korumalarını veya kalıcı talimatlarını silmez.
-  Çerçeve görev türüne, çözüm planına, hedef AI'a ve sohbet/mobil/tarayıcı/agent ortamına göre
-  hazırlanır; yalnızca tavsiye isteyen bir Codex görevi dosya değişikliğine dönüştürülmez.
-  Analiz/öneri görevlerinde giriş ve bağlayıcı sözleşme aynı değerlendirme akışını kullanır;
-  kodlama profili seçilmesi otomatik uygulama, build çalıştırma veya test dosyası değiştirme
-  talimatı eklemez. Bu sınır standart modda da korunur; eski kayıtların varsayılan uygulama
-  adımları ve başarı ölçütleri yeniden derleme sırasında öneri akışına uyarlanır, kullanıcıya
-  ait maddeler korunur. Araştırma ve veri analizi protokolleri ile güvenlik incelemesi, mimari
-  ve arayüz değerlendirmesine ait özel inceleme ölçütleri korunur.
-  Kısa/standart/ayrıntılı girişler sırasıyla 1500/3500/6000 karakterle sınırlıdır; tam görev
-  sözleşmesi ayrıca korunur. Rol, adımlar, eksik bağlam, çıktı ve kabul kontrolleri göreve özgüdür.
-  Modelin gizli düşünce izini istemez; somut sonuç ve doğrulama kanıtı ister. Etiket, hedef AI'ın
-  davranışını garanti etmez veya yeni izin oluşturmaz.
+- **Prison = the core architecture.** Each request is stored separately as `data/prisons/pr_xxxxxxxx.json`. No
+  operation reads two prisons together.
+- **The Prompt Compiler uses only the active prison's state.** It is a pure function
+  (`compilePrompt(toCompileInput(prison))`): same state → same prompt; no outside information can leak in.
+- **AI output is not trusted.** Every LLM response goes through JSON parsing + Zod validation + a semantic check; on
+  failure it is requested again **once** with the errors attached. No endless retries. The final compiled prompt is
+  validated again after corrections; invalid output is never saved as a new version.
+- **The user's words take precedence over interpretation.** The model's free sub-goals are marked as implicit
+  interpretation; real user quotes are kept as explicit instructions. Analysis, planning, JB/standard generation and
+  the jury use the same meaning rules: a suggestion does not create an extra prohibition, and a negative instruction
+  stays negative when written in the requirements list.
+- **The final text is really reviewed.** With an AI engine selected, standard and JB generation are written through
+  the API; the merged text to be saved is sent to the critic. If needed, safe state corrections are applied and the
+  API does **one** regeneration with the feedback. The new text is evaluated again. Explicit conditions, conditions
+  from revisions, required implicit conditions and memory-bound items cannot be deleted by the critic. If a serious
+  issue or a weak quality dimension remains, the new version is not accepted.
+- **The user's real words are kept.** An item the AI summary misread can only be corrected with a verbatim quote that
+  can be verified from the original request or an active user revision. The reviewer picks one of the real user
+  statements numbered by the application; it does not rewrite the quote. The application verifies the source of the
+  choice and the protections of the item to be changed. Memory-bound and explicit items cannot be changed this way.
+  An independent check that catches a rejected condition being made mandatory does not accept the result even if the
+  critic scores it high. A solution plan that conflicts with the corrected task is prepared and reviewed again.
+  Model assumptions the user did not state, and that are not bound to memory, can be cleaned up; user conditions,
+  required implicit conditions and remaining unknowns cannot be deleted through this exception. New permission claims
+  the reviewer adds for actions such as publishing/deploying are accepted only if they can be verified, together
+  with their conditions, from a real user sentence.
+- **The output format comes first.** Detailed mode does not add decision explanations or report sections to a task
+  that asks only for a table/JSON/code. Planning and verification are working steps; the final answer reports only
+  the information that is part of the requested output.
+- **Restoring a version also rolls back the scope of instructions.** The revision history is kept; later
+  instructions that were rolled back do not mix into the new compilation. New instructions given after the restore
+  take effect.
+- **Assumptions and unknowns are separate.** In the prompt they sit in separate blocks headed "not verified
+  information" and "do not invent an answer".
+- **Lock the scope, not the ability to solve.** Strict/free scope modes never loosen protections.
+- **Task memory.** Standing directives such as "don't deploy" or "don't change the architecture" are written into the
+  prison's memory and protect the items they are bound to; they are lifted only if explicitly withdrawn. They never
+  carry over to another prison. In new API revisions each directive reports the verbatim texts of its related items;
+  the application binds only the matches added or confirmed in that revision. Unrelated menu/context information is
+  not swept into another directive's protection. An invalid binding is verified again; existing protections of older
+  records are never loosened on their own.
+- **JB mode.** The mode, shown with a red frame, can be chosen before analysis; the choice is saved to the prison and
+  the prompt version. The generation source (local/API), provider and model are tracked with the version. Changing
+  the mode never deletes the task's goal, explicit requirements, protections or standing instructions. The framing
+  is prepared for the task type, the solution plan, the target AI and the chat/mobile/browser/agent setting; a Codex
+  task that asks only for advice is not turned into file changes. In analysis/advice tasks the introduction and the
+  binding contract use the same evaluation flow; choosing a coding profile does not add instructions for automatic
+  application, running a build or changing test files. This limit is kept in standard mode as well; when recompiling,
+  the default application steps and success criteria of older records are adapted to the advice flow, and items
+  belonging to the user are kept. Special review criteria for research and data-analysis protocols and for security,
+  architecture and interface reviews are kept. Short/standard/detailed introductions are limited to
+  1500/3500/6000 characters respectively; the full task contract is kept separately. Role, steps, missing context,
+  output and acceptance checks are specific to the task. It never asks for the model's hidden thinking trace; it asks
+  for concrete results and verification evidence. The label does not guarantee the target AI's behaviour or create
+  new permissions.
 
-### Durum makinesi
+### State machine
 
 ```
 RAW_REQUEST → INTENT_PARSED → PRISON_CREATED → REQUIREMENTS_RESOLVED → READY_FOR_COMPILE
@@ -551,34 +518,33 @@ READY_FOR_COMPILE → PROMPT_COMPILED → PROMPT_VALIDATED → READY
 READY → USER_REVISION → PRISON_UPDATED → PROMPT_RECOMPILED → PROMPT_VALIDATED → READY
 ```
 
-Analiz, plan yenileme, üretim veya son metin denetimi için gereken AI çağrısı başarısız olursa
-yeni prompt sürümü kaydedilmez; prison son geçerli durumunda kalır. Arka plan işinin başarısız
-durumu ve tartışması ayrıca kaydedilir. API hatası yerel sonuçla gizlenmez.
-Anahtarsız yerel modda derleyici ve kural kontrolleri çalışır; AI denetimi yapılmış gibi gösterilmez.
-Uygulama seçilen AI için prompt üretir; bu promptu ikinci bir API'ye gönderip kullanıcının asıl
-işini yürütmez.
+If an AI call needed for analysis, plan renewal, generation or the final-text review fails, no new prompt version is
+saved; the prison stays in its last valid state. The failed state of the background job and its discussion are
+recorded separately. An API error is never hidden behind a local result. In the keyless local mode the compiler and
+rule checks run; it is never shown as if an AI review had been done. The application produces a prompt for the
+chosen AI; it does not send that prompt to a second API to carry out the user's actual work.
 
-### Genişletme
+### Extending
 
-- **Yeni görev türü:** `src/templates/task-types.ts` içine bir profil ekle (veya çalışma zamanında
-  `registerTaskType`). Intent şeması, katalog ve derleyici otomatik olarak kullanır.
-- **Yeni hedef model:** `TargetAdapter` arayüzünü uygula (`src/adapters/types.ts`), `registerAdapter`
-  ile kaydet ve `CONCRETE_TARGETS` listesine ekle.
-- **Yeni AI sağlayıcısı:** `LLMProvider` arayüzünü uygula (`src/services/ai/types.ts`).
+- **New task type:** add a profile to `src/templates/task-types.ts` (or `registerTaskType` at runtime). The intent
+  schema, the catalog and the compiler use it automatically.
+- **New target model:** implement the `TargetAdapter` interface (`src/adapters/types.ts`), register it with
+  `registerAdapter` and add it to the `CONCRETE_TARGETS` list.
+- **New AI provider:** implement the `LLMProvider` interface (`src/services/ai/types.ts`).
 
 ## API
 
-| Metot | Yol | İş |
+| Method | Path | Purpose |
 | --- | --- | --- |
-| GET | `/api/engine` | Aktif motor |
-| GET / PUT / DELETE | `/api/settings/providers` | Anahtarsız ayar özeti / revizyon kontrollü ekip kaydı / ortam ayarlarına dönüş |
-| POST | `/api/engine/check` | Seçili motorun bağlantısını kontrol et (`{ health }`) |
-| GET / POST | `/api/prisons` | Liste / yeni prison (istek analizi) |
-| GET / DELETE | `/api/prisons/:id` | Prison oku / sil |
-| POST | `/api/prisons/:id/compile` | İlk derleme veya yeniden üretim; HTTP 202 `{ accepted: true, operation }` |
-| POST | `/api/prisons/:id/adjust` | `{ action }` modifier veya `{ target }` hedef değişimi; HTTP 202 iş kabulü |
-| POST | `/api/prisons/:id/revise` | `{ message }` revizyon veya `{ clarifications: [{ question, answer }] }` soru yanıtları; HTTP 202 iş kabulü |
-| GET | `/api/operations/:id` | Kabul edilen işin durumu, son tartışması, hata nedeni ve sonuç sürümü |
-| GET | `/api/prisons/:id/operation` | Görevin son işi; yenileme sonrası aynı işlemi bulmak için |
-| GET | `/api/prisons/:id/progress` | Eski istemciler için yalnızca canlı süreç ilerlemesi |
-| POST | `/api/prisons/:id/restore` | `{ version }` sürüme dönüş |
+| GET | `/api/engine` | Active engine |
+| GET / PUT / DELETE | `/api/settings/providers` | Keyless settings summary / revision-checked team save / back to environment settings |
+| POST | `/api/engine/check` | Check the selected engine's connection (`{ health }`) |
+| GET / POST | `/api/prisons` | List / new prison (request analysis) |
+| GET / DELETE | `/api/prisons/:id` | Read / delete a prison |
+| POST | `/api/prisons/:id/compile` | First compile or regeneration; HTTP 202 `{ accepted: true, operation }` |
+| POST | `/api/prisons/:id/adjust` | `{ action }` modifier or `{ target }` target change; HTTP 202 job accepted |
+| POST | `/api/prisons/:id/revise` | `{ message }` revision or `{ clarifications: [{ question, answer }] }` answers; HTTP 202 job accepted |
+| GET | `/api/operations/:id` | Status of an accepted job, its latest discussion, the cause of an error and the resulting version |
+| GET | `/api/prisons/:id/operation` | The task's latest job; to find the same operation after a reload |
+| GET | `/api/prisons/:id/progress` | Live progress only, for older clients |
+| POST | `/api/prisons/:id/restore` | `{ version }` restore a version |

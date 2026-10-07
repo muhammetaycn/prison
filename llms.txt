@@ -10,8 +10,10 @@
 
 ## Docs
 
-- [README](https://github.com/muhammetaycn/prison/blob/main/README.md): setup, pipeline, architecture, REST API (Turkish, with an English summary)
-- [Product system](https://github.com/muhammetaycn/prison/blob/main/docs/product-system.md): what the user controls, the learning flow, the personal AI team
+- [README (English)](https://github.com/muhammetaycn/prison/blob/main/README.md): what it does, how to use it, where to use the prompt, setup, the multi-model council, architecture, REST API
+- [README (简体中文)](https://github.com/muhammetaycn/prison/blob/main/README.zh-CN.md): the same in Simplified Chinese
+- [README (Türkçe)](https://github.com/muhammetaycn/prison/blob/main/README.tr.md): the same in Turkish
+- [Product system](https://github.com/muhammetaycn/prison/blob/main/docs/product-system.en.md): what the user controls, the learning flow, the personal AI team, gestures and equipment (also in [中文](https://github.com/muhammetaycn/prison/blob/main/docs/product-system.zh-CN.md) and [Türkçe](https://github.com/muhammetaycn/prison/blob/main/docs/product-system.md))
 
 ## Source
 
