@@ -4,6 +4,20 @@ Doğal dilde yazılan bir isteği anlayan, onu izole bir **Prison Instance** iç
 yapılandırılmış göreve dönüştüren ve hedef yapay zekâ (GPT, Claude, Gemini, Codex) için
 optimize edilmiş prompt derleyen uygulama.
 
+![Kapışma arenası: kazanan kürsüde, kafesin çevresinde tribün](docs/images/arena.jpg)
+
+Modeller isteğin üzerinde gerçekten çalışırken sahnede izlenir. Her model kendi Pırpır'ıyla temsil edilir.
+Kapışma arenasında öneriler yarışır, jüri puanları silahlara dönüşür, en güçlü prompt kazanır.
+Ekip masasında ise modeller tek bir ortak metinde uzlaşır. Sahnede görülen her an kayıttaki gerçek bir olaydan gelir.
+
+| Saldırı anı | Ekip masası |
+| --- | --- |
+| ![Eleştiri bir saldırı olarak canlandırılır; puan ne kadar düşükse vuruş o kadar serttir](docs/images/duel.jpg) | ![Karanlık odada ortak metin üzerinde uzlaşma](docs/images/table.jpg) |
+
+| Başlangıç | Telefonda |
+| --- | --- |
+| ![İsteğin yazıldığı ana ekran: prompt modu, kullanım yeri ve çalışma masası seçimi](docs/images/home.jpg) | ![Arena telefonda](docs/images/mobile.jpg) |
+
 ```
 KULLANICI İSTEĞİ → INTENT ENGINE → PRISON OLUŞTURUCU → İZOLE PRISON STATE
 → ÇÖZÜM PLANI + GEREKSİNİMLER → HEDEF AI SÖZLEŞMESİ → ÇOK MODELLİ AI MASASI
