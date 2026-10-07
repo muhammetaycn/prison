@@ -1,5 +1,16 @@
 # PRISON
 
+**İsteğini anlat; PRISON onu kullanacağın yapay zekâya göre hazırlanmış, denetlenmiş bir prompta dönüştürsün.**
+<br><sub>Open-source prompt studio · [English summary](#in-english)</sub>
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![three.js](https://img.shields.io/badge/three.js-r186-000000?logo=threedotjs)
+![Zod](https://img.shields.io/badge/Zod-4-3E67B1?logo=zod&logoColor=white)
+![Vitest](https://img.shields.io/badge/test-Vitest-6E9F18?logo=vitest&logoColor=white)
+![Dil](https://img.shields.io/badge/prompt%20dili-TR%20%7C%20EN-c0392b)
+
 Doğal dilde yazılan bir isteği anlayan, onu izole bir **Prison Instance** içine alan,
 yapılandırılmış göreve dönüştüren ve hedef yapay zekâ (GPT, Claude, Gemini, Codex) için
 optimize edilmiş prompt derleyen uygulama.
@@ -10,13 +21,67 @@ Modeller isteğin üzerinde gerçekten çalışırken sahnede izlenir. Her model
 Kapışma arenasında öneriler yarışır, jüri puanları silahlara dönüşür, en güçlü prompt kazanır.
 Ekip masasında ise modeller tek bir ortak metinde uzlaşır. Sahnede görülen her an kayıttaki gerçek bir olaydan gelir.
 
-| Saldırı anı | Ekip masası |
-| --- | --- |
-| ![Eleştiri bir saldırı olarak canlandırılır; puan ne kadar düşükse vuruş o kadar serttir](docs/images/duel.jpg) | ![Karanlık odada ortak metin üzerinde uzlaşma](docs/images/table.jpg) |
+## İçindekiler
 
-| Başlangıç | Telefonda |
-| --- | --- |
-| ![İsteğin yazıldığı ana ekran: prompt modu, kullanım yeri ve çalışma masası seçimi](docs/images/home.jpg) | ![Arena telefonda](docs/images/mobile.jpg) |
+- [Ne işe yarar?](#ne-işe-yarar)
+- [Nasıl kullanılır?](#nasıl-kullanılır)
+- [Promptu nerede kullanırım?](#promptu-nerede-kullanırım)
+- [Nasıl çalışır?](#nasıl-çalışır)
+- [Görüntüler](#görüntüler)
+- [In English](#in-english)
+- [Çalıştırma](#çalıştırma) · [Çok modelli AI masası](#çok-modelli-ai-masası) · [Mimari](#mimari) · [API](#api)
+
+## Ne işe yarar?
+
+- **Ne istediğini netleştirir.** İsteğindeki asıl amacı, değişmemesi gereken sınırları, çıktının biçimini ve
+  eksik bilgileri ayırır; bilinmeyenleri uydurmaz, sana sorar.
+- **Kullanacağın yapay zekâya göre yazar.** Prompt ChatGPT, Claude, Gemini ya da Codex için; sohbet, telefon,
+  tarayıcı ya da araç kullanan agent ortamına göre ayrı ayrı hazırlanır.
+- **Birden çok model birlikte çalışır.** İstersen 3–6 farklı model ayrı ayrı taslak yazar, birbirini eleştirir,
+  kör karşılaştırılır; son metin anlamsal denetimden geçmeden hazır sayılmaz.
+- **Çalışmayı izletir.** Arena ya da ekip masası, modellerin ne önerdiğini, neyi neden değiştirdiğini ve kimin
+  kazandığını gösterir.
+- **Kontrol sende.** Görevi kendi cümlelerinle düzeltebilir, soruları yanıtlayabilir, sınırları kilitleyebilir,
+  eski sürümlere dönebilir ve kendi API bağlantılarını ve modellerini seçebilirsin.
+
+## Nasıl kullanılır?
+
+1. **İsteğini yaz.** "Ne yaptırmak istiyorsun?" alanına derdini kendi cümlelerinle anlat.
+2. **Promptun nerede kullanılacağını seç:** Normal sohbet, Telefondaki AI, Tarayıcıdaki AI ya da Araç kullanan agent.
+   Prompt modu olarak "İsteğe göre", "Standart" ya da "JB modu"nu seçebilirsin.
+3. **Çalışma masasını seç:** Yarışma masasında modeller ayrı adaylarla yarışır; ekip masasında tek bir ortak metinde uzlaşır.
+4. **Planı ve soruları gözden geçir.** Eksik bilgi sorularını yanıtla; gerekirse görevi kendi cümlelerinle düzelt.
+5. **Masayı izle.** Öneriler, eleştiriler ve kararlar sahnede ve konuşma dökümünde görünür.
+6. **Promptu al ve kullan.** Hazır metni kopyala ve hedef yapay zekâya yapıştır. Sonuç istediğin gibi olmazsa geri
+   bildirim ver; PRISON yeni bir sürüm üretir.
+
+## Promptu nerede kullanırım?
+
+| Seçtiğin kullanım yeri | Promptu yapıştıracağın yer | En uygun işler |
+| --- | --- | --- |
+| Normal sohbet | ChatGPT, Claude ya da Gemini'nin web veya masaüstü sohbeti | Metin, plan, analiz, öğrenme, tek seferlik işler |
+| Telefondaki AI | Aynı asistanların mobil uygulamaları | Kısa, adım adım ilerleyen yanıtlar |
+| Tarayıcıdaki AI | Tarayıcıda sayfaları okuyup işlem yapabilen asistanlar | Web'de araştırma, form ve sayfa işleri |
+| Araç kullanan agent | Codex gibi kod ve dosyalar üzerinde çalışan agent'lar | Proje içinde dosya düzenleme, komut çalıştırma, test |
+
+Hedef yapay zekâyı "otomatik" bırakırsan PRISON işin türüne göre en uygununu önerir ve nedenini gösterir.
+
+## Nasıl çalışır?
+
+```mermaid
+flowchart LR
+  A[İsteğin] --> B[Niyet analizi]
+  B --> C["İzole prison<br/>amaç · sınırlar · eksikler"]
+  C --> D["Çözüm planı<br/>ve gereksinimler"]
+  D --> E[Hedef AI sözleşmesi]
+  E --> F{Çok modelli masa}
+  F --> G[Bağımsız taslaklar]
+  G --> H["Karşılıklı eleştiri<br/>ve ikinci tur"]
+  H --> I[Kör karşılaştırma]
+  I --> J[Anlamsal denetim]
+  J --> K[Doğrulanmış prompt]
+  K --> L["ChatGPT · Claude<br/>Gemini · Codex"]
+```
 
 ```
 KULLANICI İSTEĞİ → INTENT ENGINE → PRISON OLUŞTURUCU → İZOLE PRISON STATE
@@ -24,6 +89,16 @@ KULLANICI İSTEĞİ → INTENT ENGINE → PRISON OLUŞTURUCU → İZOLE PRISON S
 → BAĞIMSIZ ADAYLAR → KARŞILIKLI ELEŞTİRİ → İKİNCİ TUR → KÖR KARŞILAŞTIRMA
 → SON METNİN ANLAMSAL DENETİMİ → GEREKİRSE BİR DÜZELTME → DOĞRULANMIŞ PROMPT
 ```
+
+## Görüntüler
+
+| Saldırı anı | Ekip masası |
+| --- | --- |
+| ![Eleştiri bir saldırı olarak canlandırılır; puan ne kadar düşükse vuruş o kadar serttir](docs/images/duel.jpg) | ![Karanlık odada ortak metin üzerinde uzlaşma](docs/images/table.jpg) |
+
+| Başlangıç | Telefonda |
+| --- | --- |
+| ![İsteğin yazıldığı ana ekran: prompt modu, kullanım yeri ve çalışma masası seçimi](docs/images/home.jpg) | ![Arena telefonda](docs/images/mobile.jpg) |
 
 ## In English
 
