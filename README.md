@@ -28,6 +28,7 @@ Ekip masasında ise modeller tek bir ortak metinde uzlaşır. Sahnede görülen 
 - [Promptu nerede kullanırım?](#promptu-nerede-kullanırım)
 - [Nasıl çalışır?](#nasıl-çalışır)
 - [Görüntüler](#görüntüler)
+- [Sık sorulan sorular](#sık-sorulan-sorular)
 - [In English](#in-english)
 - [Çalıştırma](#çalıştırma) · [Çok modelli AI masası](#çok-modelli-ai-masası) · [Mimari](#mimari) · [API](#api)
 
@@ -99,6 +100,32 @@ flowchart LR
 | Başlangıç | Telefonda |
 | --- | --- |
 | ![İsteğin yazıldığı ana ekran: prompt modu, kullanım yeri ve çalışma masası seçimi](docs/images/home.jpg) | ![Arena telefonda](docs/images/mobile.jpg) |
+
+## Sık sorulan sorular
+
+**PRISON işi benim yerime yapar mı?**
+Hayır. PRISON işi yapacak yapay zekâ için en iyi promptu hazırlar. Promptu kendi kullandığın yapay zekâda
+çalıştırırsın. PRISON, hedef yapay zekânın işi tamamladığını iddia etmez.
+
+**API anahtarı olmadan çalışır mı?**
+Evet. Anahtar yoksa yerel, kural tabanlı motor bütün akışı (analiz, derleme, revizyon, sürümler) çalıştırır ve
+arayüzde bunu açıkça belirtir. Daha derin anlamsal analiz ve çok modelli masa için bir sağlayıcı anahtarı gerekir.
+
+**Hangi sağlayıcı ve modelleri kullanabilirim?**
+NVIDIA, DeepSeek, Anthropic, OpenAI ve HTTPS üzerinden OpenAI uyumlu Chat Completions API'leri.
+Kendi bağlantılarını ekleyip çıkarabilir, masaya 3–6 farklı model seçebilirsin.
+
+**Anahtarlarım ve kayıtlarım nerede tutulur?**
+Anahtarlar yalnızca sunucu tarafında kullanılır, tarayıcıya gönderilmez. Her görev (prison) kendi JSON dosyasında,
+varsayılan olarak `data/prisons` klasöründe saklanır.
+
+**Arenada gördüklerim gerçek mi?**
+Evet. Sahnedeki her an (öneri, eleştiri, silah, eleme, kazanan) kayıttaki gerçek bir olaydan gelir. Puan ya da
+içerik uydurulmaz. Hareket azaltma tercihi açıksa sahne sadeleşir.
+
+**JB modu nedir?**
+Promptu göreve özel uzman çerçevesiyle yeniden yazan bir moddur. Yeni yetki vermez, hedef sistemin kurallarını
+aşmayı vaat etmez; görevin amacı, sınırları ve kalıcı talimatları korunur.
 
 ## In English
 
