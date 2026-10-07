@@ -70,24 +70,24 @@ Hedef yapay zekâyı "otomatik" bırakırsan PRISON işin türüne göre en uygu
 
 ```mermaid
 flowchart LR
-  A[İsteğin] --> B[Niyet analizi]
-  B --> C["İzole prison<br/>amaç · sınırlar · eksikler"]
-  C --> D["Çözüm planı<br/>ve gereksinimler"]
-  D --> E[Hedef AI sözleşmesi]
-  E --> F{Çok modelli masa}
-  F --> G[Bağımsız taslaklar]
-  G --> H["Karşılıklı eleştiri<br/>ve ikinci tur"]
-  H --> I[Kör karşılaştırma]
-  I --> J[Anlamsal denetim]
-  J --> K[Doğrulanmış prompt]
-  K --> L["ChatGPT · Claude<br/>Gemini · Codex"]
-```
-
-```
-KULLANICI İSTEĞİ → INTENT ENGINE → PRISON OLUŞTURUCU → İZOLE PRISON STATE
-→ ÇÖZÜM PLANI + GEREKSİNİMLER → HEDEF AI SÖZLEŞMESİ → ÇOK MODELLİ AI MASASI
-→ BAĞIMSIZ ADAYLAR → KARŞILIKLI ELEŞTİRİ → İKİNCİ TUR → KÖR KARŞILAŞTIRMA
-→ SON METNİN ANLAMSAL DENETİMİ → GEREKİRSE BİR DÜZELTME → DOĞRULANMIŞ PROMPT
+  subgraph S1["1 · Görevi anlar"]
+    direction TB
+    A[İsteğin] --> B[Niyet analizi]
+    B --> C["İzole prison<br/>amaç · sınırlar · eksikler"]
+    C --> D["Çözüm planı<br/>ve gereksinimler"]
+  end
+  subgraph S2["2 · Masada geliştirir"]
+    direction TB
+    E[Hedef AI sözleşmesi] --> F[Bağımsız taslaklar]
+    F --> G["Karşılıklı eleştiri<br/>ve ikinci tur"]
+    G --> H[Kör karşılaştırma]
+  end
+  subgraph S3["3 · Teslim eder"]
+    direction TB
+    I["Anlamsal denetim<br/>gerekirse bir düzeltme"] --> J[Doğrulanmış prompt]
+    J --> K["ChatGPT · Claude<br/>Gemini · Codex"]
+  end
+  S1 --> S2 --> S3
 ```
 
 ## Görüntüler
