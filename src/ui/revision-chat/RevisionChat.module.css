@@ -1,0 +1,163 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.thread {
+  margin: 0;
+  padding: 0 4px 0 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 9px 13px;
+  border-radius: 12px 12px 3px 12px;
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  font-size: 13.5px;
+}
+
+.reply {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 12px;
+  border-left: 2px solid var(--line-strong);
+}
+
+.replyHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.replyTitle {
+  font-size: 13.5px;
+  color: var(--text);
+}
+
+.versionLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.versionLink:hover {
+  text-decoration: underline;
+}
+
+.changes {
+  margin: 0;
+  padding: 0 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+.time {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggestion {
+  background: transparent;
+  height: 26px;
+  padding: 0 10px;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+.suggestion:hover:not(:disabled) {
+  border-color: #3a3f49;
+  color: var(--text);
+}
+
+.composer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  max-height: 160px;
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  resize: vertical;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.input:focus {
+  border-color: #3b4150;
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+.send {
+  height: 44px;
+  flex: none;
+}
+
+@media (max-width: 720px) {
+  .composer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input {
+    width: 100%;
+  }
+
+  .send {
+    justify-content: center;
+  }
+}

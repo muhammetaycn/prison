@@ -1,0 +1,55 @@
+.shell {
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+  /* Pin the row to the viewport; an auto row grows with the content and the clipped part can't be scrolled. */
+  grid-template-rows: minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.main {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.error {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 16px 36px 0;
+  padding: 10px 10px 10px 16px;
+  border: 1px solid rgba(238, 131, 120, 0.35);
+  border-radius: var(--radius);
+  background: #1d1413;
+  color: #f2c2bc;
+  font-size: 13.5px;
+}
+
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+  .shell > aside {
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .main {
+    overflow: visible;
+  }
+  .error {
+    margin: 12px 16px 0;
+  }
+}

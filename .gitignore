@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.env*.local
+.env
+data/prisons/*.json
+**/.provider-settings.json
+**/.provider-settings.json.*.tmp
+
+# Runtime data (user prisons and operations), logs and generated outputs
+data/
+artifacts/
+*.log

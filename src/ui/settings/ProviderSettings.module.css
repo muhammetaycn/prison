@@ -1,0 +1,18 @@
+.root { max-width: 1060px; margin: 0 auto; padding: 32px 36px 64px; min-width: 0; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.header h1 { margin: 8px 0; font-size: 26px; outline: none; }
+.header p, .note { color: var(--text-dim); font-size: 13px; line-height: 1.65; }
+.fields { border: 1px solid var(--line-strong); border-radius: var(--radius); margin: 22px 0; padding: 20px; min-width: 0; display: grid; gap: 14px; }
+.fields legend { padding: 0 8px; font-size: 15px; font-weight: 600; }
+.fields label { display: grid; gap: 7px; min-width: 0; font-size: 12px; color: var(--text-dim); }
+.fields input:not([type=checkbox]), .fields select { min-width: 0; width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 7px; background: var(--bg-sunken); color: var(--text); font: inherit; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; min-width: 0; }
+.connection { padding: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); display: grid; gap: 12px; min-width: 0; }
+.connection small, .footer small { color: var(--text-faint); line-height: 1.5; }
+.actions, .footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fields .toggle { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.toggle input { accent-color: #f2c14e; }
+.error, .message { padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; font-size: 13px; line-height: 1.6; }
+.error { color: #f2c2bc; background: #291819; }
+.message { color: #f2dba1; background: #252118; }
+@media(max-width:640px) { .root { padding: 22px 16px 44px; } .header { flex-direction: column; } .row { grid-template-columns: 1fr; } .fields { padding: 12px; } .connection { padding: 12px; } }

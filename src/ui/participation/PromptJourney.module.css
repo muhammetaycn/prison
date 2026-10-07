@@ -1,0 +1,23 @@
+.root {
+  min-width: 0;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+.root summary { cursor: pointer; color: var(--text); }
+.root summary span { margin-left: 12px; color: var(--text-faint); font-size: 11px; }
+.root p { margin: 12px 0; }
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 14px 0; padding: 0; list-style: none; }
+.steps li { display: flex; flex-direction: column; gap: 4px; border-left: 2px solid var(--line-strong); padding-left: 10px; overflow-wrap: anywhere; }
+.steps strong { font-size: 12px; font-weight: 500; color: var(--text); }
+.steps span { font-size: 11px; color: var(--text-faint); }
+.root .note { font-size: 11px; color: var(--text-faint); margin-bottom: 0; }
+.compact { padding: 10px 13px; }
+@media (max-width: 640px) {
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .root summary span { display: block; margin: 3px 0 0; }
+}

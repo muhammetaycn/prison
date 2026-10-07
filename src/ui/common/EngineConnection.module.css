@@ -1,0 +1,87 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  margin: 0 -14px -14px;
+  padding: 14px 22px;
+  font-size: 12px;
+  min-width: 0;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-dim);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+
+.connected { background: var(--ok); }
+.failed { background: var(--danger); }
+.local { background: var(--warn); }
+
+.model {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+.message {
+  margin: 2px 0 0;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.error { color: var(--danger); }
+.checked { color: var(--text-faint); font-size: 10.5px; }
+.check { width: 100%; justify-content: center; margin-top: 6px; font-size: 11.5px; }
+
+.council {
+  margin: 4px 0;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.council summary {
+  cursor: pointer;
+}
+
+.council p {
+  margin: 8px 0;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.council ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.council li {
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.council small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-faint);
+  font-size: 10px;
+}

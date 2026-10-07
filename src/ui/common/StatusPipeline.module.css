@@ -1,0 +1,74 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  overflow-x: auto;
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.stage + .stage::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  margin: 0 10px;
+  background: var(--line-strong);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+}
+
+.done {
+  color: var(--text-dim);
+}
+
+.done .dot {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+
+.done + .stage::before,
+.done + .done::before {
+  background: rgba(116, 198, 157, 0.45);
+}
+
+.working {
+  color: var(--text);
+}
+
+.working .dot {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .working .dot {
+    animation: none;
+  }
+}

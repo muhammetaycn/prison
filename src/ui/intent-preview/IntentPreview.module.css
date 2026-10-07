@@ -1,0 +1,323 @@
+/* The prison frame: a bordered, cornered container that signals an isolated state. */
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 22px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  min-width: 0;
+}
+
+.root::before,
+.root::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--line-strong);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.root::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: var(--radius-lg);
+  border-color: var(--text-faint);
+}
+
+.root::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+  border-bottom-right-radius: var(--radius-lg);
+  border-color: var(--text-faint);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.key {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.goal {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.text {
+  margin: 0;
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
+
+.routing,
+.plan,
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.routing {
+  padding: 14px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+
+.targetHeading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.targetHeading strong {
+  font-size: 18px;
+}
+
+.targetRationale {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--accent-line);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.planSteps {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.planSteps li {
+  padding-left: 3px;
+}
+
+.planSteps li::marker {
+  color: var(--accent);
+}
+
+.planSteps strong {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.planSteps p {
+  margin: 4px 0 0;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.stepCheck {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.questions {
+  padding: 14px;
+  border: 1px solid rgba(227, 180, 106, 0.28);
+  border-radius: var(--radius);
+  background: var(--warn-soft);
+}
+
+.questionList {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.answerForm, .answerField { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.answerForm { gap: 16px; }
+.answerField { color: var(--text); font-size: 13px; overflow-wrap: anywhere; }
+.answerField textarea { width: 100%; box-sizing: border-box; min-height: 64px; resize: vertical; padding: 10px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--panel); color: var(--text); font: inherit; }
+.answerField textarea:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.answerField textarea:disabled { opacity: .65; }
+
+.planHint {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.moreSteps summary,
+.stateDetails summary {
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 12.5px;
+}
+
+.moreSteps > ol,
+.moreSteps > ul {
+  margin-top: 12px;
+}
+
+.stateContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 16px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin: 0;
+}
+
+.facts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.facts dd {
+  margin: 0;
+  font-size: 13.5px;
+  overflow-wrap: anywhere;
+}
+
+.secondary {
+  color: var(--text-faint);
+}
+
+.flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-left: 14px;
+  position: relative;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.item::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 4px;
+  height: 1px;
+  background: var(--text-faint);
+}
+
+.itemText {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.source {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+.source_revision {
+  color: var(--accent);
+}
+
+.source_critic {
+  color: var(--ok);
+}
+
+.source_assumed {
+  color: var(--warn);
+}
+
+.warn .key {
+  color: #b9965f;
+}
+
+.danger .key {
+  color: var(--danger);
+}
+
+.memory {
+  padding: 12px 14px;
+  border: 1px dashed var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+
+.memory .key {
+  color: var(--accent);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--text-faint);
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,158 @@
+.root {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 36px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+
+.working {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+}
+
+.operationFailure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgba(238, 131, 120, 0.35);
+  border-radius: var(--radius);
+  background: #1d1413;
+  color: #f2c2bc;
+  font-size: 13px;
+}
+
+.operationFailure p {
+  margin: 6px 0 0;
+  max-width: 680px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.raw summary {
+  width: fit-content;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+.raw summary:hover {
+  color: var(--text-dim);
+}
+
+.raw blockquote {
+  margin: 10px 0 0;
+  padding: 10px 14px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--text-dim);
+  font-size: 13.5px;
+  white-space: pre-wrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.left {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  border-radius: var(--radius-lg);
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.generate {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+}
+
+.generateText {
+  margin: 0;
+  max-width: 560px;
+  color: var(--text-dim);
+  font-size: 14.5px;
+}
+
+.generateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.generateTarget {
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.generateTarget strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .left {
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .root {
+    padding: 24px 16px 48px;
+  }
+}
