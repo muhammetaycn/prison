@@ -11,7 +11,7 @@
 ![three.js](https://img.shields.io/badge/three.js-r186-000000?logo=threedotjs)
 ![Zod](https://img.shields.io/badge/Zod-4-3E67B1?logo=zod&logoColor=white)
 ![Vitest](https://img.shields.io/badge/test-Vitest-6E9F18?logo=vitest&logoColor=white)
-![Prompt dili](https://img.shields.io/badge/prompt%20dili-EN%20%7C%20TR-c0392b)
+![Prompt dili](https://img.shields.io/badge/prompt%20dili-EN%20%7C%20TR%20%7C%20%E4%B8%AD%E6%96%87-c0392b)
 
 Doğal dilde yazılan bir isteği anlayan, onu izole bir **Prison Instance** içine alan,
 yapılandırılmış göreve dönüştüren ve hedef yapay zekâ (GPT, Claude, Gemini, Codex) için
@@ -39,8 +39,11 @@ Ekip masasında ise modeller tek bir ortak metinde uzlaşır. Sahnede görülen 
   eksik bilgileri ayırır; bilinmeyenleri uydurmaz, sana sorar.
 - **Kullanacağın yapay zekâya göre yazar.** Prompt ChatGPT, Claude, Gemini ya da Codex için; sohbet, telefon,
   tarayıcı ya da araç kullanan agent ortamına göre ayrı ayrı hazırlanır.
-- **Birden çok model birlikte çalışır.** İstersen 3–6 farklı model ayrı ayrı taslak yazar, birbirini eleştirir,
-  kör karşılaştırılır; son metin anlamsal denetimden geçmeden hazır sayılmaz.
+- **Varsayılan hızlı, istersen masa.** Tek bir yapay zekâ API'si promptu doğrudan yazar; son metin yine denetlenir.
+  Ayrıntılı iş için 3–6 farklı model ayrı ayrı taslak yazar, birbirini eleştirir, kör karşılaştırılır; son metin
+  anlamsal denetimden geçmeden hazır sayılmaz.
+- **Üç dil konuşur.** İstekleri Türkçe, İngilizce ve Basitleştirilmiş Çince anlar, promptu bu üç dilden birinde
+  yazar; arayüz de aynı üç dil arasında değiştirilebilir.
 - **Çalışmayı izletir.** Arena ya da ekip masası, modellerin ne önerdiğini, neyi neden değiştirdiğini ve kimin
   kazandığını gösterir.
 - **Kontrol sende.** Görevi kendi cümlelerinle düzeltebilir, soruları yanıtlayabilir, sınırları kilitleyebilir,
@@ -48,12 +51,14 @@ Ekip masasında ise modeller tek bir ortak metinde uzlaşır. Sahnede görülen 
 
 ## Nasıl kullanılır?
 
-1. **İsteğini yaz.** "Ne yaptırmak istiyorsun?" alanına derdini kendi cümlelerinle anlat.
+1. **İsteğini yaz.** "Ne yaptırmak istiyorsun?" alanına derdini kendi cümlelerinle anlat. Prompt dilini
+   (EN / TR / 中文) seç; arayüz dili yan menüden ayrıca değiştirilir.
 2. **Promptun nerede kullanılacağını seç:** Normal sohbet, Telefondaki AI, Tarayıcıdaki AI ya da Araç kullanan agent.
    Prompt modu olarak "İsteğe göre", "Standart" ya da "JB modu"nu seçebilirsin.
-3. **Çalışma masasını seç:** Yarışma masasında modeller ayrı adaylarla yarışır; ekip masasında tek bir ortak metinde uzlaşır.
+3. **Çalışma biçimini seç:** Varsayılan **Hızlı · tek model** promptu tek modelle doğrudan yazar. Ayrıntılı iş
+   için yarışma masasında modeller ayrı adaylarla yarışır; ekip masasında tek bir ortak metinde uzlaşır.
 4. **Planı ve soruları gözden geçir.** Eksik bilgi sorularını yanıtla; gerekirse görevi kendi cümlelerinle düzelt.
-5. **Masayı izle.** Öneriler, eleştiriler ve kararlar sahnede ve konuşma dökümünde görünür.
+5. **Masa seçtiysen izle.** Öneriler, eleştiriler ve kararlar sahnede ve konuşma dökümünde görünür.
 6. **Promptu al ve kullan.** Hazır metni kopyala ve hedef yapay zekâya yapıştır. Sonuç istediğin gibi olmazsa geri
    bildirim ver; PRISON yeni bir sürüm üretir.
 
@@ -205,7 +210,8 @@ Diğer komutlar: `npm test` (vitest), `npm run typecheck`, `npm run build`.
 ### Çok modelli AI masası
 
 Tek NVIDIA anahtarıyla farklı model uç noktalarına gerçek çağrı yapılır; aynı modelin
-altı kişiliğe bölünmesi altı farklı model sayılmaz. Bu kurulumda masa açıktır.
+altı kişiliğe bölünmesi altı farklı model sayılmaz. Bu kurulumda masa hazırdır ve görev için bir masa
+seçilince çalışır; varsayılan yine hızlı tek model yoludur.
 
 Varsayılan masa (4 Ekim 2026 canlı testine göre): `nvidia/nemotron-3-ultra-550b-a55b`,
 `nvidia/nemotron-3-super-120b-a12b`, `openai/gpt-oss-20b`, `meta/muse-glimmer-30b`,
@@ -401,7 +407,8 @@ sahne için `three` paketi eklendi ve yalnızca sahne açıldığında tarayıc�
 ### Kullanıcının AI ekibi ve katılımı
 
 Yan menüde **AI ekibim · API ayarları** ekranından bağlantı ekleyebilir/çıkarabilir,
-analiz modelini ve promptu hazırlayacak 3–6 farklı modeli seçebilirsin. NVIDIA, DeepSeek,
+hızlı tek model üretimi için analiz modelini, ayrıntılı masa/arena işi için isteğe bağlı 3–6 farklı modeli
+seçebilirsin. NVIDIA, DeepSeek,
 OpenAI, Anthropic ve HTTPS üzerinden OpenAI uyumlu Chat Completions API desteklenir.
 Model kimlikleri ve uzmanlıkları kullanıcı tarafından belirlenir; sağlayıcı erişimi gerçek
 üretim öncesinde sınanır. Kaydetmek uzaktan API çağrısı yapmaz. Kayıtlı ekibe seçilmemiş
@@ -413,18 +420,24 @@ Boş anahtar mevcut kaydı korur; **Anahtarı kaldır** açıkça kaldırır. Ad
 yeni anahtar gerekir. İlk kayda kadar ortam ayarları kullanılır; **Başlangıç ekibine dön**
 kayıtlı ayarları kaldırarak ortam ayarlarına döner. Ayar değişiklikleri yeni üretimlerde geçerlidir.
 
-**Sahneye katıl** bölümündeki 50 ayrı eklem hareketi bir karaktere seçilerek veya kısa hareket
-komutuyla gönderilir. Komut izlemeyi duraklatıp sahneyi görünür alana getirir; arka plandaki
-üretimi, jüri puanlarını ve olay kaydını değiştirmez. Oturan karakterler ve eşya taşıyan kanatlar
-korunur. Otomatik hareketler karaktere ve gerçek olaya göre çeşitlenir; aynı klip arka arkaya
-seçilmez. Silahlar kanat/sırt bağlantılarında taşınır; açık ekipman rehberi her birinin gerçek
-jüri ölçütünü ve o andaki sahibini gösterir.
+50 ayrı eklem hareketini sistem, işin gerçek olaylarına göre kendisi seçer; izleyen kişi hareket
+seçmez. Oturan karakterler ve eşya taşıyan kanatlar korunur. Hareketler karaktere ve gerçek olaya
+göre çeşitlenir; aynı klip arka arkaya seçilmez. Oynatma kontrolleri arka plandaki API işlemini,
+jüri puanlarını ve olay kaydını değiştirmez. Silahlar kanat/sırt bağlantılarında taşınır; açık
+ekipman rehberi her birinin gerçek jüri ölçütünü ve o andaki sahibini gösterir.
 
 Hedef/sınır/çıktı ipuçları kullanıcının görünür isteğine eklenir. Kapatılabilir **Nasıl kullanırım?**
 açıklamaları aşamaya uygun yönlendirme verir. Hazır sürümde tam prompt kopyalanabilir veya
 `.txt` indirilebilir; başka AI'a gönderme kullanıcının kontrolündedir. Sonuç geri bildirimi
 gerçek revizyon akışına gider; tamamlanmadan başarı mesajı verilmez. Başarısız tartışma kaydı
 hazır prompt gibi sunulmaz.
+
+Sonuç ekranı göreve özel bir başlangıç yolu da gösterir: Codex, Claude Code, ChatGPT, Claude, Gemini
+veya Kimi için resmî kurulum bağlantıları, hazırlık adımları ve çıktı kontrolleri. Görsel 3D modelleme
+yolları Blender kurulumu ve betik yönergelerini içerir; yazılım görüntüleyicileri ve dil/veri modelleri
+kendi yollarını korur. Rehber gösterilen prompt sürümünün görev özetini kullanır ve kopyalanan promptu
+değiştirmez. Arayüzü Türkçe, İngilizce ve Basitleştirilmiş Çince arasında değiştirmek istekleri ve
+kayıtlı promptları korur; prompt dili ayrıca seçilir.
 
 Bu yapının amacı ve genişletme kuralları: [ürün sistemi](docs/product-system.md).
 

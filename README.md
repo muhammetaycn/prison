@@ -11,7 +11,7 @@
 ![three.js](https://img.shields.io/badge/three.js-r186-000000?logo=threedotjs)
 ![Zod](https://img.shields.io/badge/Zod-4-3E67B1?logo=zod&logoColor=white)
 ![Vitest](https://img.shields.io/badge/test-Vitest-6E9F18?logo=vitest&logoColor=white)
-![Prompt language](https://img.shields.io/badge/prompts-EN%20%7C%20TR-c0392b)
+![Prompt language](https://img.shields.io/badge/prompts-EN%20%7C%20TR%20%7C%20%E4%B8%AD%E6%96%87-c0392b)
 
 An application that understands a request written in natural language, isolates it in its own **Prison
 Instance**, turns it into a structured task and compiles a prompt optimized for the target AI (GPT, Claude,
@@ -39,8 +39,11 @@ At the team table the models converge on one shared text. Every moment on stage 
   output format and the missing information; it does not invent unknowns, it asks you.
 - **Writes for the AI you will use.** The prompt is prepared for ChatGPT, Claude, Gemini or Codex, and for a chat,
   phone, browser or tool-using agent setting.
-- **Several models work together.** Optionally 3–6 different models draft independently, critique each other and
-  are compared blind; the final text is not ready until it passes a semantic check.
+- **Fast by default, a table when you want depth.** One AI API writes the prompt directly and the final text is still
+  checked. For detailed work, 3–6 different models can draft independently, critique each other and be compared
+  blind; the final text is not ready until it passes a semantic check.
+- **Speaks three languages.** Requests are understood and prompts are written in English, Turkish or Simplified
+  Chinese; the interface can be switched between the same three.
 - **Lets you watch the work.** The arena or the team table shows what the models proposed, what they changed and
   why, and who won.
 - **You stay in control.** Correct the task in your own words, answer questions, lock limits, go back to earlier
@@ -49,15 +52,17 @@ At the team table the models converge on one shared text. Every moment on stage 
 ## How to use it
 
 1. **Write your request.** Describe what you need in your own words in the "What do you want done?" (*Ne yaptırmak
-   istiyorsun?*) box. The interface is in Turkish; the original labels are given in italics.
+   istiyorsun?*) box. Pick the prompt language (EN / TR / 中文); the interface language is switched separately in
+   the side menu. Turkish labels are given in italics.
 2. **Choose where the prompt will be used:** a normal chat (*Normal sohbet*), an AI on your phone (*Telefondaki AI*),
    an AI in your browser (*Tarayıcıdaki AI*) or a tool-using agent (*Araç kullanan agent*). As the prompt mode, pick
    "As requested" (*İsteğe göre*), "Standard" (*Standart*) or "JB mode" (*JB modu*).
-3. **Choose the work table:** at the competition table (*Yarışma masası*) the models compete with separate
-   candidates; at the team table (*Ekip masası*) they agree on one shared text.
+3. **Choose the working mode** (*Çalışma biçimi*): **Quick · single model** (*Hızlı · tek model*, the default) has
+   one model write the prompt directly. For detailed work, at the competition table (*Yarışma masası*) the models
+   compete with separate candidates; at the team table (*Ekip masası*) they agree on one shared text.
 4. **Review the plan and the questions.** Answer the missing-information questions; correct the task in your own
    words if needed.
-5. **Watch the table.** Proposals, critiques and decisions appear on stage and in the transcript.
+5. **Watch the table** if you chose one. Proposals, critiques and decisions appear on stage and in the transcript.
 6. **Take the prompt and use it.** Copy the finished text and paste it into the target AI. If the result is not what
    you wanted, give feedback; PRISON produces a new version.
 
@@ -206,7 +211,8 @@ Other commands: `npm test` (vitest), `npm run typecheck`, `npm run build`.
 ### Multi-model AI council
 
 With one NVIDIA key, real calls are made to different model endpoints; splitting the same model into six personas
-does not count as six different models. The council is on in this setup.
+does not count as six different models. The council is available in this setup and runs when a table is chosen
+for the task; the default stays the quick single-model path.
 
 Default council (per the live test of 4 October 2026): `nvidia/nemotron-3-ultra-550b-a55b`,
 `nvidia/nemotron-3-super-120b-a12b`, `openai/gpt-oss-20b`, `meta/muse-glimmer-30b`,

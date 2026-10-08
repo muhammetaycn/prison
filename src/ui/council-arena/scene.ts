@@ -9,6 +9,7 @@ import { Ambient } from "./ambient";
 import { carry, gearFor, SCABBARD, type WeaponKind } from "./equipment";
 import { ARENA_BOX, honorSeat } from "./honor";
 import { chooseNextGesture, getGesture, sampleGesture, type GestureCategory, type GestureId } from "./gesture-library";
+import { chooseMoodGesture, outcomeReactions } from "./outcome-gestures";
 import { DustPuffs, softDot, SpeedLines, SwingTrail, stepSpring, type Spring } from "./motion-fx";
 import { loadArenaParts, type AccessoryPart, type BodyPart, type FurniturePart, type GearPart, type PartLibrary, type WeaponPart } from "./parts";
 import { shotFor, WIDE, type Shot } from "./director";
@@ -2201,15 +2202,29 @@ export class ArenaScene {
   /**
    * Gives a moment its body language from the library: greeting on taking a seat, thinking while studying,
    * presenting a proposal. The clip follows whatever the bird is already doing, and a replay picks the same one.
+   * The others then take the outcome in (outcome-gestures.ts): a reviewed bird by its real score, the rest at an
+   * elimination or a win.
    */
   private gestureFor(event: CouncilEvent) {
+    if (this.options.reducedMotion) return;
+    const now = this.now();
+    const busyUntil = (avatar: Avatar) => avatar.actions.reduce((end, action) => (action.kind === "idle" ? end : Math.max(end, action.start + action.duration)), now);
     const category = GESTURE_FOR[event.kind];
     const actor = this.avatars.get(event.actorId);
-    if (!category || !actor || this.options.reducedMotion) return;
-    const id = chooseNextGesture(actor.lastGesture ?? null, { seat: actor.seat.id, event: event.seq, category });
-    const now = this.now();
-    const after = actor.actions.reduce((end, action) => (action.kind === "idle" ? end : Math.max(end, action.start + action.duration)), now);
-    this.startGesture(actor, id, after);
+    if (category && actor) {
+      const id = chooseNextGesture(actor.lastGesture ?? null, { seat: actor.seat.id, event: event.seq, category });
+      this.startGesture(actor, id, busyUntil(actor));
+    }
+    // Reactions wait for the move that caused them: after the blow lands, the fall, the step onto the podium.
+    const cause = actor?.actions.find((action) => action.kind !== "idle" && action.start >= now);
+    const settled = cause ? cause.start + cause.duration : now;
+    const seats = [...this.avatars.values()].map((avatar) => ({ id: avatar.seat.id, eliminated: avatar.eliminated, failed: avatar.failed }));
+    for (const reaction of outcomeReactions(event, seats)) {
+      const avatar = this.avatars.get(reaction.seat)!;
+      const playing = avatar.gesture ? avatar.gesture.start + (getGesture(avatar.gesture.id)?.duration ?? 0) / this.speed : now;
+      const id = chooseMoodGesture(avatar.lastGesture, reaction.seat, event.seq, reaction.mood);
+      this.startGesture(avatar, id, Math.max(settled + reaction.delay / this.speed, busyUntil(avatar), playing));
+    }
   }
 
   private startGesture(avatar: Avatar, id: GestureId, start: number) {
